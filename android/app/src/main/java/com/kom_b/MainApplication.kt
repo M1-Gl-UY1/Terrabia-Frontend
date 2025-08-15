@@ -1,5 +1,5 @@
 package com.kom_b
-
+import org.devio.rn.splashscreen.SplashScreen;
 import android.app.Application
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
