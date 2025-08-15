@@ -1,97 +1,143 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# KOM-B - Application Mobile React Native
 
-# Getting Started
+Une application mobile pour commander des produits frais directement auprès des producteurs locaux.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 🚀 Fonctionnalités
 
-## Step 1: Start Metro
+### Écran d'onboarding
+- **4 slides d'introduction** présentant les avantages de l'application
+- Navigation fluide avec boutons précédent/suivant
+- Indicateurs de pagination
+- Bouton "passer" pour aller directement à l'accueil
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### Page d'accueil
+- **Barre de recherche** pour trouver des produits
+- **Section Hero** avec appel à l'action
+- **Offres du jour** avec produits en promotion
+- **Produits recommandés** avec indicateurs de qualité
+- **Navigation par onglets** en bas de l'écran
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+### Navigation par onglets
+- **Accueil** : Page principale avec produits et offres
+- **Catégories** : Grille de catégories de produits
+- **Panier** : Gestion du panier avec calcul des totaux
+- **Profil** : Informations utilisateur et paramètres
 
-```sh
-# Using npm
-npm start
+## 🛠️ Structure du projet
 
-# OR using Yarn
-yarn start
+```
+src/
+├── components/
+│   ├── OnboardingSlide.tsx      # Composant pour chaque slide d'onboarding
+│   ├── PaginationDots.tsx       # Indicateurs de pagination
+│   └── BottomTabBar.tsx         # Barre de navigation en bas
+├── navigation/
+│   └── AppNavigator.tsx         # Configuration des routes
+├── screens/
+│   ├── Onboarding/
+│   │   └── OnboardingScreen.tsx # Écran d'onboarding principal
+│   ├── HomeScreen.tsx           # Page d'accueil
+│   ├── CategoriesScreen.tsx     # Écran des catégories
+│   ├── CartScreen.tsx           # Écran du panier
+│   └── ProfileScreen.tsx        # Écran de profil
+└── assets/
+    └── images/                  # Images et icônes
 ```
 
-## Step 2: Build and run your app
+## 🎨 Design System
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### Couleurs principales
+- **Orange principal** : `#F27A22` (boutons, accents)
+- **Jaune** : `#F59E0B` (section hero)
+- **Vert** : `#10B981` (indicateurs actifs)
+- **Gris foncé** : `#1F2937` (texte principal)
+- **Gris clair** : `#6B7280` (texte secondaire)
 
-### Android
+### Typographie
+- **Titres** : 24-28px, poids 700
+- **Sous-titres** : 18-20px, poids 600
+- **Corps de texte** : 14-16px, poids 400-500
+- **Labels** : 12-14px, poids 500
 
-```sh
-# Using npm
-npm run android
+## 🚀 Installation et démarrage
 
-# OR using Yarn
-yarn android
-```
+1. **Cloner le projet**
+   ```bash
+   git clone [URL_DU_REPO]
+   cd KOM_B
+   ```
 
-### iOS
+2. **Installer les dépendances**
+   ```bash
+   npm install
+   ```
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+3. **Démarrer Metro**
+   ```bash
+   npm start
+   ```
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+4. **Lancer sur Android**
+   ```bash
+   npm run android
+   ```
 
-```sh
-bundle install
-```
+5. **Lancer sur iOS**
+   ```bash
+   npm run ios
+   ```
 
-Then, and every time you update your native dependencies, run:
+## 📱 Navigation
 
-```sh
-bundle exec pod install
-```
+L'application utilise React Navigation avec :
+- **Stack Navigator** pour l'onboarding → accueil
+- **Tab Navigator** pour la navigation principale
+- **Navigation fluide** entre les écrans
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+### Routes disponibles
+- `Onboarding` : Écran d'introduction
+- `MainTabs` : Navigation par onglets
+  - `Home` : Page d'accueil
+  - `Categories` : Catégories de produits
+  - `Cart` : Panier d'achat
+  - `Profile` : Profil utilisateur
 
-```sh
-# Using npm
-npm run ios
+## 🔧 Dépendances principales
 
-# OR using Yarn
-yarn ios
-```
+- `react-native` : 0.81.0
+- `@react-navigation/native` : ^6.1.17
+- `@react-navigation/native-stack` : ^6.10.0
+- `@react-navigation/bottom-tabs` : ^6.5.0
+- `react-native-safe-area-context` : ^5.5.2
+- `react-native-screens` : ^4.5.0
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## 📸 Captures d'écran
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+L'application comprend :
+1. **Écran de bienvenue** avec logo KOM-B
+2. **Slide de commande** avec icône de boîte
+3. **Slide d'agriculture locale** avec graphique
+4. **Slide final** avec checkmark
+5. **Page d'accueil** avec recherche et produits
+6. **Navigation par onglets** fonctionnelle
 
-## Step 3: Modify your app
+## 🎯 Fonctionnalités à venir
 
-Now that you have successfully run the app, let's make changes!
+- [ ] Authentification utilisateur
+- [ ] Système de paiement
+- [ ] Suivi des commandes en temps réel
+- [ ] Notifications push
+- [ ] Mode hors ligne
+- [ ] Intégration avec l'API backend
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## 🤝 Contribution
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+1. Fork le projet
+2. Créer une branche feature (`git checkout -b feature/AmazingFeature`)
+3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrir une Pull Request
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## 📄 Licence
 
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
