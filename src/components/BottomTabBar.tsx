@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { Home, LayoutGrid, ShoppingCart, User } from 'lucide-react-native';
 import type { MainTabParamList } from '../navigation/AppNavigator';
 
+// Définition des types pour les props
 type TabItem = {
   key: keyof MainTabParamList;
   label: string;
-  icon: string;
-  activeIcon: string;
+  icon: React.ComponentType<{ size: number; color: string; strokeWidth?: number; }>;
+  activeIcon: React.ComponentType<{ size: number; color: string; strokeWidth?: number; }>;
 };
 
 type Props = {
@@ -14,62 +16,66 @@ type Props = {
   onTabPress: (tabKey: keyof MainTabParamList) => void;
 };
 
+// Tableau de configuration des onglets avec des composants d'icônes Lucide
 const tabs: TabItem[] = [
   {
     key: 'Home',
     label: 'Accueil',
-    icon: '🏠',
-    activeIcon: '🏠',
+    icon: Home,
+    activeIcon: Home,
   },
   {
     key: 'Categories',
     label: 'Catégories',
-    icon: '📱',
-    activeIcon: '📱',
+    icon: LayoutGrid,
+    activeIcon: LayoutGrid,
   },
   {
     key: 'Cart',
     label: 'Panier',
-    icon: '🛒',
-    activeIcon: '🛒',
+    icon: ShoppingCart,
+    activeIcon: ShoppingCart,
   },
   {
     key: 'Profile',
     label: 'Profil',
-    icon: '👤',
-    activeIcon: '👤',
+    icon: User,
+    activeIcon: User,
   },
 ];
 
 export default function BottomTabBar({ currentRoute, onTabPress }: Props) {
   return (
     <View style={styles.container}>
-      {tabs.map((tab) => {
-        const isActive = currentRoute === tab.key;
-        return (
-          <Pressable
-            key={tab.key}
-            style={[styles.tabItem, isActive && styles.tabItemActive]}
-            onPress={() => onTabPress(tab.key)}
-          >
-            <Text style={[styles.tabIcon, isActive && styles.tabIconActive]}>
-              {isActive ? tab.activeIcon : tab.icon}
-            </Text>
-            <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
-              {tab.label}
-            </Text>
-          </Pressable>
-        );
-      })}
+      {/* Onglets de navigation */}
+      <View style={styles.tabsContainer}>
+        {tabs.map((tab) => {
+          const isActive = currentRoute === tab.key;
+          const IconComponent = isActive ? tab.activeIcon : tab.icon;
+          const color = isActive ? '#F27A22' : '#9CA3AF';
+
+          return (
+            <Pressable
+              key={tab.key}
+              style={[styles.tabItem, isActive && styles.tabItemActive]}
+              onPress={() => onTabPress(tab.key)}
+            >
+              <IconComponent size={24} color={color} />
+              <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
+                {tab.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
     backgroundColor: '#FFFFFF',
-    paddingVertical: 8,
+    paddingVertical: 0,
     paddingHorizontal: 16,
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
@@ -78,22 +84,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 8,
+    paddingTop: 0,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+  },
+  tabsContainer: {
+    flexDirection: 'row',
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 4,
   },
   tabItemActive: {
-    // Active state styling
-  },
-  tabIcon: {
-    fontSize: 24,
-    color: '#9CA3AF',
-    marginBottom: 4,
-  },
-  tabIconActive: {
-    color: '#F27A22',
+    // Styles pour l'état actif, si nécessaire
   },
   tabLabel: {
     fontSize: 12,

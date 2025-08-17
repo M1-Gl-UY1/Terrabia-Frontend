@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   headerButtonText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -156,11 +156,13 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 100,
     borderRadius: 30,
+    marginBottom : 16,
   },
   nextButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+    
   },
 });
 

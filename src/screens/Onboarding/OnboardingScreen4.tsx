@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   headerButtonText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     width : 190,
+    textAlign : 'center',
   },
 });
 

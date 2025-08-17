@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import TabNavigatorWrapper from '../components/TabNavigatorWrapper';
+import { Search, Trash2, ArrowLeft } from 'lucide-react-native';
 
 type SearchNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Search'>;
 
@@ -26,20 +27,21 @@ export default function SearchScreen() {
     'Prunes',
   ];
 
-  const recherchesRecentes = [
+  const [recherchesRecentes, setRecherchesRecentes] = useState([
     'Avocats',
     'Ignames blanc',
     'Mangues',
-  ];
+  ]);
 
   const handleSearch = (term: string) => {
     setSearchText(term);
     // Ici vous pouvez implémenter la logique de recherche
+    setRecherchesRecentes(prevSearches => [term, ...prevSearches] );
     console.log('Recherche pour:', term);
   };
 
   const clearRecentSearches = () => {
-    // Ici vous pouvez implémenter la logique pour effacer les recherches récentes
+    setRecherchesRecentes([]);
     console.log('Recherches récentes effacées');
   };
 
@@ -52,18 +54,19 @@ export default function SearchScreen() {
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Text style={styles.backButtonText}>←</Text>
+            <Text style={styles.backButtonText}><ArrowLeft /></Text>
           </TouchableOpacity>
           
           {/* Barre de recherche */}
           <View style={styles.searchContainer}>
-            <Text style={styles.searchIcon}>🔍</Text>
+            <Text style={styles.searchIcon}><Search size={18} /></Text>
             <TextInput
               style={styles.searchInput}
               placeholder="Que recherchez-vous aujourd'hui ?"
               placeholderTextColor="#9CA3AF"
               value={searchText}
               onChangeText={setSearchText}
+              onSubmitEditing={() =>{handleSearch(searchText)}}
               autoFocus
             />
           </View>
@@ -91,18 +94,18 @@ export default function SearchScreen() {
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Recherche recentes</Text>
               <TouchableOpacity onPress={clearRecentSearches}>
-                <Text style={styles.trashIcon}>🗑️</Text>
+                <Text style={styles.trashIcon}><Trash2 /></Text>
               </TouchableOpacity>
             </View>
             <View style={styles.tagsContainer}>
-              {recherchesRecentes.map((tag, index) => (
-                <Pressable
-                  key={index}
-                  style={styles.tag}
-                  onPress={() => handleSearch(tag)}
-                >
-                  <Text style={styles.tagText}>{tag}</Text>
-                </Pressable>
+            {recherchesRecentes.map((tag, index) => (
+              <Pressable
+                key={index}
+                style={styles.tag}
+                onPress={() => handleSearch(tag)}
+              >
+                <Text style={styles.tagText}>{tag}</Text>
+              </Pressable>
               ))}
             </View>
           </View>
@@ -116,6 +119,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+    
   },
   header: {
     flexDirection: 'row',
@@ -124,33 +128,39 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
+    position : 'relative',
+    right : 20,
+    top: 20
   },
   backButton: {
     padding: 8,
-    marginRight: 12,
+    marginRight: 2,
   },
   backButtonText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#000000',
+    position : 'relative',
+    top : 2
   },
   searchContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    borderRadius: 50,
+    paddingHorizontal: 16,
+    paddingVertical: 2,
+    marginTop : 5,
   },
   searchIcon: {
-    fontSize: 18,
-    marginRight: 8,
+    
+    marginRight: 1,
     color: '#9CA3AF',
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 12,
     color: '#1F2937',
   },
   content: {

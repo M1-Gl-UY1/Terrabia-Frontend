@@ -39,5 +39,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    paddingBottom: 20, // Plus d'espace pour la barre de navigation
+    margin : 0,
   },
 });

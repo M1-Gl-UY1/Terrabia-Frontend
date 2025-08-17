@@ -17,7 +17,7 @@ class MainActivity : ReactActivity() {
   /**
    * Returns the name of the main component registered from JavaScript.
    */
-  override fun getMainComponentName(): String = "KOM_B"
+  override fun getMainComponentName(): String = "KOM-B"
 
   /**
    * Returns the instance of the [ReactActivityDelegate].

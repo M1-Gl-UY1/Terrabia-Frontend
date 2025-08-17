@@ -1,22 +1,30 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Pressable } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Pressable, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import TabNavigatorWrapper from '../components/TabNavigatorWrapper';
-import { Search, Bell } from 'lucide-react-native';
+import Inspector from '../components/Inspector';
+import { Search, Bell, Info, Bug } from 'lucide-react-native';
+import { useAppSelector } from '../store/types';
+
 
 type HomeNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainTabs'>;
 
 const HomeScreen = () => {
   const navigation = useNavigation<HomeNavigationProp>();
+  const hasUnreadNotifications = useAppSelector(state => state.notifications.unreadCount > 0);
 
-  
+  // Debug: Inspecter les composants
+ 
 
   return (
     <TabNavigatorWrapper>
       <SafeAreaView style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
           {/* Header */}
           <View style={styles.header}>
             {/* Barre de recherche */}
@@ -29,9 +37,18 @@ const HomeScreen = () => {
                 Que recherchez-vous aujourd'hui ?
               </Text>
             </Pressable>
-            <TouchableOpacity style={styles.notificationButton}>
-              <Bell size={24} color="#9CA3AF" />
-            </TouchableOpacity>
+            
+            
+                 <TouchableOpacity
+                  style={styles.notificationButton}
+                  onPress={() => navigation.navigate('Notifications')}
+                >
+                  <View style={{ position: 'relative' }}>
+                    <Bell size={24} color="#9CA3AF" />
+                    {hasUnreadNotifications && <View style={styles.badge} />}
+                  </View>
+                </TouchableOpacity>
+
           </View>
 
           {/* Hero Section / Banner */}
@@ -66,21 +83,56 @@ const HomeScreen = () => {
             </ScrollView>
           </View>
 
+          
+
           {/* Section "Recommandé pour vous" */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Recommandé pour vous</Text>
-            <View style={styles.recommendedGrid}>
-              <View style={styles.recommendedCard}>
-                <Image source={require('../assets/images/noix.png')} style={styles.recommendedImage} />
-                <Text style={styles.recommendedName}>Macabots</Text>
-                <Text style={styles.recommendedPrice}>2700 FCFA <Text style={styles.oldPrice}>3000 FCFA</Text></Text>
-                <Text style={styles.ordersText}>23 Commandes</Text>
+            <View style={styles.produit}>
+              <View style={styles.recommendedGrid}>
+                <View style={styles.recommendedCard}>
+                  <Image source={require('../assets/images/noix.png')} style={styles.recommendedImage} />
+                  <Text style={styles.recommendedName}>Macabots</Text>
+                  <Text style={styles.recommendedPrice}>2700 FCFA <Text style={styles.oldPrice}>3000 FCFA</Text></Text>
+                  <Text style={styles.ordersText}>23 Commandes</Text>
+                </View>
+                <View style={styles.recommendedCard}>
+                  <Image source={require('../assets/images/pomme.png')} style={styles.recommendedImage} />
+                  <Text style={styles.recommendedName}>Pommes</Text>
+                  <Text style={styles.recommendedPrice}>2700 FCFA</Text>
+                  <Text style={styles.ordersText}>23 Commandes</Text>
+                </View>
               </View>
-              <View style={styles.recommendedCard}>
-                <Image source={require('../assets/images/pomme.png')} style={styles.recommendedImage} />
-                <Text style={styles.recommendedName}>Pommes</Text>
-                <Text style={styles.recommendedPrice}>2700 FCFA</Text>
-                <Text style={styles.ordersText}>23 Commandes</Text>
+              
+              <View style={styles.recommendedGrid}>
+                <View style={styles.recommendedCard}>
+                  <Image source={require('../assets/images/patate.png')} style={styles.recommendedImage} />
+                  <Text style={styles.recommendedName}>Patates</Text>
+                  <Text style={styles.recommendedPrice}>1500 FCFA</Text>
+                  <Text style={styles.ordersText}>18 Commandes</Text>
+                </View>
+                <View style={styles.recommendedCard}>
+                  <Image source={require('../assets/images/manioc.png')} style={styles.recommendedImage} />
+                  <Text style={styles.recommendedName}>Manioc</Text>
+                  <Text style={styles.recommendedPrice}>1200 FCFA</Text>
+                  <Text style={styles.ordersText}>31 Commandes</Text>
+                </View>
+                
+              </View>
+
+              <View style={styles.recommendedGrid}>
+                  <View style={styles.recommendedCard}>
+                    <Image source={require('../assets/images/patate.png')} style={styles.recommendedImage} />
+                    <Text style={styles.recommendedName}>Patates</Text>
+                    <Text style={styles.recommendedPrice}>1500 FCFA</Text>
+                    <Text style={styles.ordersText}>18 Commandes</Text>
+                  </View>
+                  <View style={styles.recommendedCard}>
+                    <Image source={require('../assets/images/manioc.png')} style={styles.recommendedImage} />
+                    <Text style={styles.recommendedName}>Manioc</Text>
+                    <Text style={styles.recommendedPrice}>1200 FCFA</Text>
+                    <Text style={styles.ordersText}>31 Commandes</Text>
+                  </View>
               </View>
             </View>
           </View>
@@ -95,7 +147,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    marginTop : 31,
+    marginTop : 25,
+    paddingBottom : 0,
   },
   header: {
     flexDirection: 'row',
@@ -103,6 +156,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 15,
   },
+ 
+  
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -174,6 +229,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 15,
   },
+
+  produit: {
+    flexDirection: 'column',
+    gap: 15,
+  },
   horizontalScroll: {
     // Styles pour la vue ScrollView horizontale
   },
@@ -206,13 +266,19 @@ const styles = StyleSheet.create({
   recommendedGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 10,
   },
   recommendedCard: {
-    width: '48%',
+    flex: 0.51,
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   recommendedImage: {
     width: '100%',
@@ -240,6 +306,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#555',
     marginTop: 2,
+  },
+  scrollContent: {
+    paddingBottom: 20, // Add some padding at the bottom for better scrolling
+  },
+  debugButton: {
+    padding: 5,
+  },
+
+  badge: {
+    position: 'absolute',
+    right: -2,  // ajuste la position selon ton besoin
+    top: -2,
+    backgroundColor: 'orange',
+    borderRadius: 6,
+    width: 12,
+    height: 12,
   },
 });
 

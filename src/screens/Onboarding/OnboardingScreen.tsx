@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
     padding: 20,
     resizeMode: 'center',
     position : "relative",
+    opacity: 3,
     
   },
   skipButton: {
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   skipButtonText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -129,8 +130,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: 'bold',
     color: '#F48C06',
-    
-
   },
   logo: {
     width: 70,

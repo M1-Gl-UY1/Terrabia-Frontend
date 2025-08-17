@@ -11,6 +11,7 @@ import CategoriesScreen from '../screens/CategoriesScreen';
 import CartScreen from '../screens/CartScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import BottomTabBar from '../components/BottomTabBar';
+import NotifScreen from '../screens/NotifScreen';
 
 export type RootStackParamList = {
   Onboarding: undefined;
@@ -19,6 +20,7 @@ export type RootStackParamList = {
   Onboarding4: undefined;
   MainTabs: undefined;
   Search: undefined;
+  Notifications : undefined;
 };
 
 export type OnboardingStackParamList = {
@@ -84,6 +86,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Onboarding4" component={OnboardingScreen4} />
       <Stack.Screen name="MainTabs" component={MainTabNavigator} />
       <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Screen name ="Notifications" component = {NotifScreen} />
     </Stack.Navigator>
   );
 }
