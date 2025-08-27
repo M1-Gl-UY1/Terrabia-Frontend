@@ -19,127 +19,115 @@ const HomeScreen = () => {
  
 
   return (
-    <TabNavigatorWrapper>
-      <SafeAreaView style={styles.container}>
-        <ScrollView 
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            {/* Barre de recherche */}
-            <Pressable 
-              style={styles.searchContainer}
-              onPress={() => navigation.navigate('Search')}
-            >
-              <Search size={20} color="#9CA3AF" />
-              <Text style={styles.searchPlaceholder}>
-                Que recherchez-vous aujourd'hui ?
-              </Text>
-            </Pressable>
-            
-            
-                 <TouchableOpacity
-                  style={styles.notificationButton}
-                  onPress={() => navigation.navigate('Notifications')}
-                >
-                  <View style={{ position: 'relative' }}>
-                    <Bell size={24} color="#9CA3AF" />
-                    {hasUnreadNotifications && <View style={styles.badge} />}
-                  </View>
-                </TouchableOpacity>
-
-          </View>
-
-          {/* Hero Section / Banner */}
-          <View style={styles.heroSection}>
-            
-            <View style={styles.heroTextContainer}>
-              <Text style={styles.heroTitle}>De la plantation à votre table, en toute simplicité</Text>
-              <Text style={styles.heroSubtitle}>Commandez maintenant {'>'}</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          {/* Barre de recherche */}
+          <Pressable
+            style={styles.searchContainer}
+            onPress={() => navigation.navigate('Search')}
+          >
+            <Search size={20} color="#9CA3AF" />
+            <Text style={styles.searchPlaceholder}>
+              Que recherchez-vous aujourd'hui ?
+            </Text>
+          </Pressable>
+          <TouchableOpacity
+            style={styles.notificationButton}
+            onPress={() => navigation.navigate('Notifications')}
+          >
+            <View style={{ position: 'relative' }}>
+              <Bell size={24} color="#9CA3AF" />
+              {hasUnreadNotifications && <View style={styles.badge} />}
             </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Hero Section / Banner */}
+        <View style={styles.heroSection}>
+          <View style={styles.heroTextContainer}>
+            <Text style={styles.heroTitle}>De la plantation à votre table, en toute simplicité</Text>
+            <Text style={styles.heroSubtitle}>Commandez maintenant {'>'}</Text>
           </View>
+        </View>
 
-          {/* Section "Offre du jour" */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Offre du jour</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-              {/* Carte de produit (exemple) */}
-              <View style={styles.productCard}>
-                <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
-                <Text style={styles.productName}>tige de tomates</Text>
-                <Text style={styles.productPrice}>3000 FCFA</Text>
-              </View>
-              <View style={styles.productCard}>
-                <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
-                <Text style={styles.productName}>tige de tomates</Text>
-                <Text style={styles.productPrice}>2500 FCFA</Text>
-              </View>
-              <View style={styles.productCard}>
-                <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
-                <Text style={styles.productName}>tige de tomates</Text>
-                <Text style={styles.productPrice}>2500 FCFA</Text>
-              </View>
-            </ScrollView>
-          </View>
+        {/* Section "Offre du jour" */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Offre du jour</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+            {/* Carte de produit (exemple) */}
+            <View style={styles.productCard}>
+              <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
+              <Text style={styles.productName}>tige de tomates</Text>
+              <Text style={styles.productPrice}>3000 FCFA</Text>
+            </View>
+            <View style={styles.productCard}>
+              <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
+              <Text style={styles.productName}>tige de tomates</Text>
+              <Text style={styles.productPrice}>2500 FCFA</Text>
+            </View>
+            <View style={styles.productCard}>
+              <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
+              <Text style={styles.productName}>tige de tomates</Text>
+              <Text style={styles.productPrice}>2500 FCFA</Text>
+            </View>
+          </ScrollView>
+        </View>
 
-          
-
-          {/* Section "Recommandé pour vous" */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Recommandé pour vous</Text>
-            <View style={styles.produit}>
-              <View style={styles.recommendedGrid}>
-                <View style={styles.recommendedCard}>
-                  <Image source={require('../assets/images/noix.png')} style={styles.recommendedImage} />
-                  <Text style={styles.recommendedName}>Macabots</Text>
-                  <Text style={styles.recommendedPrice}>2700 FCFA <Text style={styles.oldPrice}>3000 FCFA</Text></Text>
-                  <Text style={styles.ordersText}>23 Commandes</Text>
-                </View>
-                <View style={styles.recommendedCard}>
-                  <Image source={require('../assets/images/pomme.png')} style={styles.recommendedImage} />
-                  <Text style={styles.recommendedName}>Pommes</Text>
-                  <Text style={styles.recommendedPrice}>2700 FCFA</Text>
-                  <Text style={styles.ordersText}>23 Commandes</Text>
-                </View>
+        {/* Section "Recommandé pour vous" */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Recommandé pour vous</Text>
+          <View style={styles.produit}>
+            <View style={styles.recommendedGrid}>
+              <View style={styles.recommendedCard}>
+                <Image source={require('../assets/images/noix.png')} style={styles.recommendedImage} />
+                <Text style={styles.recommendedName}>Macabots</Text>
+                <Text style={styles.recommendedPrice}>2700 FCFA <Text style={styles.oldPrice}>3000 FCFA</Text></Text>
+                <Text style={styles.ordersText}>23 Commandes</Text>
               </View>
-              
-              <View style={styles.recommendedGrid}>
-                <View style={styles.recommendedCard}>
-                  <Image source={require('../assets/images/patate.png')} style={styles.recommendedImage} />
-                  <Text style={styles.recommendedName}>Patates</Text>
-                  <Text style={styles.recommendedPrice}>1500 FCFA</Text>
-                  <Text style={styles.ordersText}>18 Commandes</Text>
-                </View>
-                <View style={styles.recommendedCard}>
-                  <Image source={require('../assets/images/manioc.png')} style={styles.recommendedImage} />
-                  <Text style={styles.recommendedName}>Manioc</Text>
-                  <Text style={styles.recommendedPrice}>1200 FCFA</Text>
-                  <Text style={styles.ordersText}>31 Commandes</Text>
-                </View>
-                
+              <View style={styles.recommendedCard}>
+                <Image source={require('../assets/images/pomme.png')} style={styles.recommendedImage} />
+                <Text style={styles.recommendedName}>Pommes</Text>
+                <Text style={styles.recommendedPrice}>2700 FCFA</Text>
+                <Text style={styles.ordersText}>23 Commandes</Text>
               </View>
-
-              <View style={styles.recommendedGrid}>
-                  <View style={styles.recommendedCard}>
-                    <Image source={require('../assets/images/patate.png')} style={styles.recommendedImage} />
-                    <Text style={styles.recommendedName}>Patates</Text>
-                    <Text style={styles.recommendedPrice}>1500 FCFA</Text>
-                    <Text style={styles.ordersText}>18 Commandes</Text>
-                  </View>
-                  <View style={styles.recommendedCard}>
-                    <Image source={require('../assets/images/manioc.png')} style={styles.recommendedImage} />
-                    <Text style={styles.recommendedName}>Manioc</Text>
-                    <Text style={styles.recommendedPrice}>1200 FCFA</Text>
-                    <Text style={styles.ordersText}>31 Commandes</Text>
-                  </View>
+            </View>
+            <View style={styles.recommendedGrid}>
+              <View style={styles.recommendedCard}>
+                <Image source={require('../assets/images/patate.png')} style={styles.recommendedImage} />
+                <Text style={styles.recommendedName}>Patates</Text>
+                <Text style={styles.recommendedPrice}>1500 FCFA</Text>
+                <Text style={styles.ordersText}>18 Commandes</Text>
+              </View>
+              <View style={styles.recommendedCard}>
+                <Image source={require('../assets/images/manioc.png')} style={styles.recommendedImage} />
+                <Text style={styles.recommendedName}>Manioc</Text>
+                <Text style={styles.recommendedPrice}>1200 FCFA</Text>
+                <Text style={styles.ordersText}>31 Commandes</Text>
+              </View>
+            </View>
+            <View style={styles.recommendedGrid}>
+              <View style={styles.recommendedCard}>
+                <Image source={require('../assets/images/patate.png')} style={styles.recommendedImage} />
+                <Text style={styles.recommendedName}>Patates</Text>
+                <Text style={styles.recommendedPrice}>1500 FCFA</Text>
+                <Text style={styles.ordersText}>18 Commandes</Text>
+              </View>
+              <View style={styles.recommendedCard}>
+                <Image source={require('../assets/images/manioc.png')} style={styles.recommendedImage} />
+                <Text style={styles.recommendedName}>Manioc</Text>
+                <Text style={styles.recommendedPrice}>1200 FCFA</Text>
+                <Text style={styles.ordersText}>31 Commandes</Text>
               </View>
             </View>
           </View>
-
-        </ScrollView>
-      </SafeAreaView>
-    </TabNavigatorWrapper>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -147,8 +135,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    marginTop : 25,
-    paddingBottom : 0,
   },
   header: {
     flexDirection: 'row',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,173 +7,302 @@ import {
   Pressable,
   Image,
   SafeAreaView,
+  TextInput,
 } from 'react-native';
 import TabNavigatorWrapper from '../components/TabNavigatorWrapper';
 
-type Category = {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-  productCount: number;
-};
+const categories = [
+  'Produits agricoles',
+  "Produits d'élevage",
+  'Produits halieutiques',
+  'Condiments et épices',
+  'Produits transformés',
+];
+
+const recommended = [
+  { name: 'légumes racines', image: require('../assets/images/patate.png') },
+  { name: 'fruits', image: require('../assets/images/pomme.png') },
+  { name: 'viandes', image: require('../assets/images/noix.png') },
+  { name: 'céréales', image: require('../assets/images/manioc.png') },
+  { name: 'oignons', image: require('../assets/images/patate.png') },
+  { name: 'carottes', image: require('../assets/images/patate.png') },
+];
+
+const products = [
+  {
+    name: 'Pommes',
+    price: '2700 FCFA',
+    image: require('../assets/images/pomme.png'),
+    orders: 25,
+    badge: 'A',
+    badgeColor: '#22C55E',
+    indicators: ['#22C55E', '#F59E0B', '#F97316'],
+  },
+  {
+    name: 'Manioc',
+    price: '3000 FCFA',
+    image: require('../assets/images/manioc.png'),
+    orders: 18,
+    badge: 'B',
+    badgeColor: '#F59E0B',
+    indicators: ['#F59E0B', '#F97316'],
+  },
+  // Ajoute d'autres produits ici...
+];
 
 export default function CategoriesScreen() {
-  const categories: Category[] = [
-    {
-      id: '1',
-      name: 'Légumes',
-      icon: '🥬',
-      color: '#10B981',
-      productCount: 45,
-    },
-    {
-      id: '2',
-      name: 'Fruits',
-      icon: '🍎',
-      color: '#F59E0B',
-      productCount: 32,
-    },
-    {
-      id: '3',
-      name: 'Tubercules',
-      icon: '🥔',
-      color: '#8B5CF6',
-      productCount: 28,
-    },
-    {
-      id: '4',
-      name: 'Céréales',
-      icon: '🌾',
-      color: '#F27A22',
-      productCount: 15,
-    },
-    {
-      id: '5',
-      name: 'Épices',
-      icon: '🌶️',
-      color: '#EF4444',
-      productCount: 22,
-    },
-    {
-      id: '6',
-      name: 'Légumineuses',
-      icon: '🫘',
-      color: '#06B6D4',
-      productCount: 18,
-    },
-    {
-      id: '7',
-      name: 'Huiles',
-      icon: '🫒',
-      color: '#84CC16',
-      productCount: 12,
-    },
-    {
-      id: '8',
-      name: 'Autres',
-      icon: '📦',
-      color: '#6B7280',
-      productCount: 35,
-    },
-  ];
-
-  const renderCategory = (category: Category) => (
-    <Pressable key={category.id} style={styles.categoryCard}>
-      <View style={[styles.categoryIcon, { backgroundColor: category.color }]}>
-        <Text style={styles.categoryIconText}>{category.icon}</Text>
-      </View>
-      <Text style={styles.categoryName}>{category.name}</Text>
-      <Text style={styles.productCount}>{category.productCount} produits</Text>
-    </Pressable>
-  );
+  const [showProducts, setShowProducts] = useState(false);
 
   return (
-    <TabNavigatorWrapper>
+    
       <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Catégories</Text>
-          <Text style={styles.subtitle}>Découvrez nos produits par catégorie</Text>
-        </View>
-        
-        <ScrollView 
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.categoriesGrid}>
-            {categories.map(renderCategory)}
-          </View>
-        </ScrollView>
+        {/* Affiche la vue recherche si showProducts est true */}
+        {showProducts ? (
+          <>
+            <View style={styles.searchBarContainer}>
+              <TextInput
+                style={styles.searchBar}
+                placeholder="Que recherchez-vous aujourd'hui ?"
+                autoFocus
+                onBlur={() => setShowProducts(false)}
+              />
+              <Pressable style={styles.filterBtn}>
+                <Text style={{fontSize:18}}>Filtre</Text>
+              </Pressable>
+            </View>
+            <ScrollView>
+              <View style={styles.productsList}>
+                {products.map((p, i) => (
+                  <View key={i} style={styles.productCardV2}>
+                    <Image source={p.image} style={styles.productImgV2} />
+                    <View style={styles.productInfoV2}>
+                      <View style={{flex:1}}>
+                        <Text style={styles.productNameV2}>{p.name}</Text>
+                        <Text style={styles.productPriceV2}>{p.price}</Text>
+                        <Text style={styles.productOrdersV2}>{p.orders} Commandes</Text>
+                      </View>
+                      <View style={styles.productBadgesV2}>
+                        <View style={[styles.badgeV2, {backgroundColor: p.badgeColor}]}> 
+                          <Text style={{color:'#fff', fontWeight:'bold'}}>{p.badge}</Text>
+                        </View>
+                        <View style={styles.indicatorsV2}>
+                          {p.indicators.map((color, idx) => (
+                            <View key={idx} style={[styles.indicatorDotV2, {backgroundColor: color}]} />
+                          ))}
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+      </ScrollView>
+          </>
+        ) : (
+          <>
+            <View style={styles.searchBarContainer}>
+              <TextInput
+                style={styles.searchBar}
+                placeholder="Que recherchez-vous aujourd'hui ?"
+                onFocus={() => setShowProducts(true)}
+              />
+            </View>
+            <View style={styles.row}>
+              <View style={styles.sideMenu}>
+                {categories.map((cat, i) => (
+                  <Pressable key={i} style={styles.sideMenuItem}>
+                    <Text style={styles.sideMenuText}>{cat}</Text>
+                  </Pressable>
+                ))}
+              </View>
+              <View style={styles.recommendedContainer}>
+                <Text style={styles.recommendedTitle}>Recommander</Text>
+                <View style={styles.recommendedGrid}>
+                  {recommended.map((item, i) => (
+                    <View key={i} style={styles.recommendedCard}>
+                      <Image source={item.image} style={styles.recommendedImg} />
+                      <Text style={styles.recommendedName}>{item.name}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </View>
+          </>
+        )}
       </SafeAreaView>
-    </TabNavigatorWrapper>
+  
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#fff',
   },
-  header: {
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    backgroundColor: '#fff',
+  },
+  searchBar: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 20,
     paddingHorizontal: 16,
-    paddingVertical: 20,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    height: 36,
+    fontSize: 14,
+    marginRight: 8,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1F2937',
-    marginBottom: 8,
+  filterBtn: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#6B7280',
-    lineHeight: 24,
+  row: {
+    flex: 1,
+    flexDirection: 'row',
   },
-  content: {
-    padding: 16,
+  sideMenu: {
+    width: 120,
+    backgroundColor: '#F3F4F6',
+    paddingVertical: 8,
   },
-  categoriesGrid: {
+  sideMenuItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+  },
+  sideMenuText: {
+    fontSize: 13,
+    color: '#222',
+  },
+  recommendedContainer: {
+    flex: 1,
+    padding: 8,
+  },
+  recommendedTitle: {
+    fontWeight: '600',
+    fontSize: 13,
+    marginBottom: 4,
+  },
+  recommendedGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    gap: 8,
   },
-  categoryCard: {
-    width: '48%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
+  recommendedCard: {
+    width: 70,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: 8,
   },
-  categoryIcon: {
+  recommendedImg: {
     width: 60,
     height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
+    borderRadius: 8,
+    marginBottom: 2,
+  },
+  recommendedName: {
+    fontSize: 11,
+    textAlign: 'center',
+  },
+  productsList: {
+    padding: 8,
+  },
+  productRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginBottom: 10,
+    padding: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
-  categoryIconText: {
-    fontSize: 28,
+  productImg: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
   },
-  categoryName: {
-    fontSize: 16,
+  productName: {
     fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 8,
-    textAlign: 'center',
+    fontSize: 15,
   },
-  productCount: {
+  productPrice: {
+    color: '#F27A22',
+    fontWeight: 'bold',
     fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
+  },
+  addBtn: {
+    backgroundColor: '#F27A22',
+    borderRadius: 16,
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+  },
+  // --- V2 styles for product card with attributes ---
+  productCardV2: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginBottom: 18,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.07,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  productImgV2: {
+    width: '100%',
+    height: 110,
+    resizeMode: 'cover',
+  },
+  productInfoV2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+  },
+  productNameV2: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#222',
+  },
+  productPriceV2: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#F27A22',
+  },
+  productOrdersV2: {
+    fontSize: 12,
+    color: '#888',
+  },
+  productBadgesV2: {
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    height: 48,
+  },
+  badgeV2: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  indicatorsV2: {
+    flexDirection: 'row',
+    gap: 3,
+  },
+  indicatorDotV2: {
+    width: 10,
+    height: 10,
+    borderRadius: 2,
+    marginRight: 2,
   },
 });

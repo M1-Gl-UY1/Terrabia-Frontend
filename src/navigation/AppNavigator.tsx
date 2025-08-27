@@ -1,6 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Home, LayoutGrid, ShoppingCart, User } from 'lucide-react-native';
 import OnboardingScreen from '../screens/Onboarding/OnboardingScreen';
 import OnboardingScreen2 from '../screens/Onboarding/OnboardingScreen2';
 import OnboardingScreen3 from '../screens/Onboarding/OnboardingScreen3';
@@ -12,6 +13,7 @@ import CartScreen from '../screens/CartScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import BottomTabBar from '../components/BottomTabBar';
 import NotifScreen from '../screens/NotifScreen';
+
 
 export type RootStackParamList = {
   Onboarding: undefined;
@@ -43,35 +45,55 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 function MainTabNavigator() {
   return (
     <Tab.Navigator
-      screenOptions={{ headerShown: false }}
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarIcon: ({ focused, color, size }: { focused: boolean; color: string; size: number }) => {
+          if (route.name === 'Home') {
+            return <Home size={size} color={color} strokeWidth={focused ? 2.5 : 1.5} />;
+          } else if (route.name === 'Categories') {
+            return <LayoutGrid size={size} color={color} strokeWidth={focused ? 2.5 : 1.5} />;
+          } else if (route.name === 'Cart') {
+            return <ShoppingCart size={size} color={color} strokeWidth={focused ? 2.5 : 1.5} />;
+          } else if (route.name === 'Profile') {
+            return <User size={size} color={color} strokeWidth={focused ? 2.5 : 1.5} />;
+          }
+          return null;
+        },
+        tabBarLabelStyle: {
+          fontSize: 13,
+          fontWeight: '700',
+          fontFamily: 'sans-serif',
+        },
+        tabBarActiveTintColor: '#F27A22',
+        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarStyle: {
+          backgroundColor: '#fff',
+          borderTopWidth: 1,
+          borderTopColor: '#E5E7EB',
+          height: 60,
+          paddingBottom: 6,
+        },
+      })}
     >
       <Tab.Screen
         name="Home"
         component={HomeScreen}
-        options={{
-          tabBarButton: () => null,
-        }}
+        options={{ tabBarLabel: 'Accueil' }}
       />
       <Tab.Screen
         name="Categories"
         component={CategoriesScreen}
-        options={{
-          tabBarButton: () => null,
-        }}
+        options={{ tabBarLabel: 'Catégories' }}
       />
       <Tab.Screen
         name="Cart"
         component={CartScreen}
-        options={{
-          tabBarButton: () => null,
-        }}
+        options={{ tabBarLabel: 'Panier' }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{
-          tabBarButton: () => null,
-        }}
+        options={{ tabBarLabel: 'Profil' }}
       />
     </Tab.Navigator>
   );
