@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, Pressable, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import TabNavigatorWrapper from '../components/TabNavigatorWrapper';
@@ -229,25 +230,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     marginRight: 15,
-    alignItems: 'center',
-    padding: 10,
   },
   productImage: {
     width: '100%',
     height: 120,
-    borderRadius: 8,
+    borderTopRightRadius: 8,
+    borderTopLeftRadius: 8,
     resizeMode: 'cover',
   },
   productName: {
     fontSize: 14,
     fontWeight: 'bold',
-    marginTop: 5,
+    marginStart: 8,
+    marginTop: 8,
+    marginEnd: 8,
   },
   productPrice: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#F48C06',
-    marginTop: 5,
+    marginStart: 8,
+    marginTop: 8,
+    marginEnd: 8,
   },
   recommendedGrid: {
     flexDirection: 'row',
@@ -258,7 +262,6 @@ const styles = StyleSheet.create({
     flex: 0.51,
     backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 10,
     marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -269,19 +272,24 @@ const styles = StyleSheet.create({
   recommendedImage: {
     width: '100%',
     height: 150,
-    borderRadius: 8,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
     resizeMode: 'cover',
   },
   recommendedName: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 5,
+    marginTop: 8,
+    marginStart: 8,
+    marginEnd: 8,
   },
   recommendedPrice: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    marginTop: 5,
+    marginTop: 8,
+    marginStart: 8,
+    marginEnd: 8,
   },
   oldPrice: {
     fontSize: 14,
@@ -291,7 +299,10 @@ const styles = StyleSheet.create({
   ordersText: {
     fontSize: 12,
     color: '#555',
-    marginTop: 2,
+    marginTop: 8,
+    marginStart: 8,
+    marginEnd: 8,
+    marginBottom: 8,
   },
   scrollContent: {
     paddingBottom: 20, // Add some padding at the bottom for better scrolling

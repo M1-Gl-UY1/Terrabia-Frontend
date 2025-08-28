@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, Image, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 14,
     color: '#555',
     lineHeight: 24,
     marginVertical: 20,
@@ -138,7 +139,8 @@ const styles = StyleSheet.create({
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 8,
+    marginTop: 8,
   },
   paginationDot: {
     width: 10,
@@ -153,10 +155,10 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     backgroundColor: '#F48C06',
-    paddingVertical: 15,
+    paddingVertical: 12,
     paddingHorizontal: 100,
     borderRadius: 30,
-    marginBottom : 16,
+    marginBottom : 24,
   },
   nextButtonText: {
     color: '#fff',

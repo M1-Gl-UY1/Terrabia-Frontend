@@ -6,9 +6,9 @@ import {
   ScrollView,
   Pressable,
   Image,
-  SafeAreaView,
   TextInput,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import TabNavigatorWrapper from '../components/TabNavigatorWrapper';
 
 const categories = [
