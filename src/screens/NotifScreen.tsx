@@ -31,7 +31,6 @@ export default function SearchScreen() {
   };
 
   return (
-    <TabNavigatorWrapper>
       <SafeAreaView style={styles.container}>
         {/* En-tête de l'écran */}
         <View style={styles.header}>
@@ -71,7 +70,6 @@ export default function SearchScreen() {
           )}
         </ScrollView>
       </SafeAreaView>
-    </TabNavigatorWrapper>
   );
 }
 

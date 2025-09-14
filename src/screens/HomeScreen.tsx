@@ -9,15 +9,11 @@ import Inspector from '../components/Inspector';
 import { Search, Bell, Info, Bug } from 'lucide-react-native';
 import { useAppSelector } from '../store/types';
 
-
 type HomeNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainTabs'>;
 
 const HomeScreen = () => {
   const navigation = useNavigation<HomeNavigationProp>();
   const hasUnreadNotifications = useAppSelector(state => state.notifications.unreadCount > 0);
-
-  // Debug: Inspecter les composants
- 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,33 +44,52 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Hero Section / Banner */}
+        {/* Hero Section avec l'image de fruits */}
         <View style={styles.heroSection}>
           <View style={styles.heroTextContainer}>
-            <Text style={styles.heroTitle}>De la plantation à votre table, en toute simplicité</Text>
-            <Text style={styles.heroSubtitle}>Commandez maintenant {'>'}</Text>
+            <Text style={styles.heroTitle}>De la plantation à{'\n'}votre table, en toute{'\n'}simplicité</Text>
+            <Text style={styles.heroSubtitle}>Commandez maintenant {'>>'}</Text>
+
+            {/* Indicateurs de pagination */}
+            <View style={styles.paginationContainer}>
+              <View style={[styles.paginationDot, styles.activeDot]} />
+              <View style={styles.paginationDot} />
+              <View style={styles.paginationDot} />
+            </View>
           </View>
+          
+          <Image 
+            source={require('../assets/images/lot_fruits.png')}  
+          />
         </View>
 
         {/* Section "Offre du jour" */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Offre du jour</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-            {/* Carte de produit (exemple) */}
+            {/* Carte de produit 1 */}
             <View style={styles.productCard}>
               <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
-              <Text style={styles.productName}>tige de tomates</Text>
-              <Text style={styles.productPrice}>3000 FCFA</Text>
+              <View style={styles.productInfo}>
+                <Text style={styles.productName}>Tige de manioc</Text>
+                <Text style={styles.productPrice}>3000 FCFA</Text>
+              </View>
             </View>
+            {/* Carte de produit 2 */}
             <View style={styles.productCard}>
-              <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
-              <Text style={styles.productName}>tige de tomates</Text>
-              <Text style={styles.productPrice}>2500 FCFA</Text>
+              <Image source={require('../assets/images/tomate.png')} style={styles.productImage} />
+              <View style={styles.productInfo}>
+                <Text style={styles.productName}>Cageot de tomates</Text>
+                <Text style={styles.productPrice}>2500 FCFA</Text>
+              </View>
             </View>
+            {/* Carte de produit 3 */}
             <View style={styles.productCard}>
               <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
-              <Text style={styles.productName}>tige de tomates</Text>
-              <Text style={styles.productPrice}>2500 FCFA</Text>
+              <View style={styles.productInfo}>
+                <Text style={styles.productName}>Tige de manioc</Text>
+                <Text style={styles.productPrice}>2500 FCFA</Text>
+              </View>
             </View>
           </ScrollView>
         </View>
@@ -82,47 +97,44 @@ const HomeScreen = () => {
         {/* Section "Recommandé pour vous" */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recommandé pour vous</Text>
-          <View style={styles.produit}>
-            <View style={styles.recommendedGrid}>
+          <View style={styles.recommendedGrid}>
+            {/* Première rangée */}
+            <View style={styles.recommendedRow}>
               <View style={styles.recommendedCard}>
                 <Image source={require('../assets/images/noix.png')} style={styles.recommendedImage} />
-                <Text style={styles.recommendedName}>Macabots</Text>
-                <Text style={styles.recommendedPrice}>2700 FCFA <Text style={styles.oldPrice}>3000 FCFA</Text></Text>
-                <Text style={styles.ordersText}>23 Commandes</Text>
+                <View style={styles.recommendedInfo}>
+                  <Text style={styles.recommendedName}>Noix</Text>
+                  <Text style={styles.recommendedPrice}>2700 FCFA <Text style={styles.oldPrice}>3000 FCFA</Text></Text>
+                  <Text style={styles.ordersText}>23 Commandes</Text>
+                </View>
               </View>
               <View style={styles.recommendedCard}>
                 <Image source={require('../assets/images/pomme.png')} style={styles.recommendedImage} />
-                <Text style={styles.recommendedName}>Pommes</Text>
-                <Text style={styles.recommendedPrice}>2700 FCFA</Text>
-                <Text style={styles.ordersText}>23 Commandes</Text>
+                <View style={styles.recommendedInfo}>
+                  <Text style={styles.recommendedName}>Pommes</Text>
+                  <Text style={styles.recommendedPrice}>2700 FCFA</Text>
+                  <Text style={styles.ordersText}>23 Commandes</Text>
+                </View>
               </View>
             </View>
-            <View style={styles.recommendedGrid}>
+            
+            {/* Deuxième rangée */}
+            <View style={styles.recommendedRow}>
               <View style={styles.recommendedCard}>
                 <Image source={require('../assets/images/patate.png')} style={styles.recommendedImage} />
-                <Text style={styles.recommendedName}>Patates</Text>
-                <Text style={styles.recommendedPrice}>1500 FCFA</Text>
-                <Text style={styles.ordersText}>18 Commandes</Text>
+                <View style={styles.recommendedInfo}>
+                  <Text style={styles.recommendedName}>Patates</Text>
+                  <Text style={styles.recommendedPrice}>1500 FCFA</Text>
+                  <Text style={styles.ordersText}>18 Commandes</Text>
+                </View>
               </View>
               <View style={styles.recommendedCard}>
                 <Image source={require('../assets/images/manioc.png')} style={styles.recommendedImage} />
-                <Text style={styles.recommendedName}>Manioc</Text>
-                <Text style={styles.recommendedPrice}>1200 FCFA</Text>
-                <Text style={styles.ordersText}>31 Commandes</Text>
-              </View>
-            </View>
-            <View style={styles.recommendedGrid}>
-              <View style={styles.recommendedCard}>
-                <Image source={require('../assets/images/patate.png')} style={styles.recommendedImage} />
-                <Text style={styles.recommendedName}>Patates</Text>
-                <Text style={styles.recommendedPrice}>1500 FCFA</Text>
-                <Text style={styles.ordersText}>18 Commandes</Text>
-              </View>
-              <View style={styles.recommendedCard}>
-                <Image source={require('../assets/images/manioc.png')} style={styles.recommendedImage} />
-                <Text style={styles.recommendedName}>Manioc</Text>
-                <Text style={styles.recommendedPrice}>1200 FCFA</Text>
-                <Text style={styles.ordersText}>31 Commandes</Text>
+                <View style={styles.recommendedInfo}>
+                  <Text style={styles.recommendedName}>Manioc</Text>
+                  <Text style={styles.recommendedPrice}>1200 FCFA</Text>
+                  <Text style={styles.ordersText}>31 Commandes</Text>
+                </View>
               </View>
             </View>
           </View>
@@ -135,190 +147,221 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F8F9FA',
+    paddingBottom: -24,
+  },
+  scrollContent: {
+    paddingBottom: 20,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 15,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
   },
- 
-  
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 21,
-    backgroundColor: '#EBEBEB',
-    borderRadius: 100,
-    paddingHorizontal: 20,
+    backgroundColor: '#F1F3F4',
+    borderRadius: 25,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     flex: 1,
-    marginRight: 0,
-    height: 50,
-  },
-
-  searchIcon: {
-    width: 20,
-    height: 20,
-    margin: 0,
-    padding : 0,
-
+    marginRight: 12,
   },
   searchPlaceholder: {
-    flex: 1, 
-    fontSize: 12,
+    fontSize: 14,
     color: '#9CA3AF',
+    marginLeft: 10,
   },
   notificationButton: {
-    padding: 5,
+    padding: 8,
   },
-  bellIcon: {
-    width: 24,
-    height: 24,
-    tintColor: '#999',
-  },
-  heroSection: {
-    marginHorizontal: 0,
-    borderRadius: 0,
-    overflow: 'hidden',
-    height: 180,
-    marginBottom: 20,
-    position: 'relative',
-    backgroundColor : '#FFCB69'
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  heroTextContainer: {
+  badge: {
     position: 'absolute',
-    top: 20,
-    left: 20,
-  },
-  heroTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-    maxWidth: '60%',
-  },
-  heroSubtitle: {
-    fontSize: 16,
-    color: '#333',
-    marginTop: 5,
-  },
-  section: {
-    paddingHorizontal: 15,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
+    right: -2,
+    top: -2,
+    backgroundColor: '#FF6B35',
+    borderRadius: 6,
+    width: 12,
+    height: 12,
   },
 
-  produit: {
-    flexDirection: 'column',
-    gap: 15,
+  // Hero Section
+  heroSection: {
+    height: 200,
+    position: 'relative',
+    flexDirection: 'row',
+    overflow: 'hidden',
+    backgroundColor : '#FFCB69'
   },
+  heroBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#FFCB69',
+  },
+  heroLeftContent: {
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingTop: 30,
+    paddingLeft: 20,
+    paddingBottom: 20,
+    zIndex: 1,
+  },
+  heroTextContainer: {
+    flex: 1,
+    paddingTop: 32,
+    paddingStart: 24,
+  },
+  heroTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#ffff',
+    lineHeight: 26,
+    marginBottom: 8,
+  },
+  heroSubtitle: {
+    fontSize: 14,
+    color: '#ffff',
+    fontWeight: '500',
+  },
+  heroImageContainer: {
+    position: 'absolute',
+    right: -20,
+    top: 0,
+    bottom: 0,
+    width: 220,
+    zIndex: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heroFruitsImage: {
+    width: 200,
+    height: 150,
+    resizeMode: 'contain',
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    alignSelf: 'flex-start',
+    marginTop: 24,
+  },
+  paginationDot: {
+    width: 10,
+    height: 10,
+    backgroundColor: '#FFFFFF',
+    opacity: 0.5,
+  },
+  activeDot: {
+    backgroundColor: '#2D3748',
+    opacity: 1,
+  },
+
+  // Sections
+  section: {
+    paddingHorizontal: 16,
+    marginTop: 24,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#2D3748',
+    marginBottom: 16,
+  },
+
+  // Offre du jour - Horizontal scroll
   horizontalScroll: {
-    // Styles pour la vue ScrollView horizontale
+    marginHorizontal: -16,
+    paddingHorizontal: 16,
   },
   productCard: {
     width: 150,
-    height: 200,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginRight: 15,
-  },
-  productImage: {
-    width: '100%',
-    height: 120,
-    borderTopRightRadius: 8,
-    borderTopLeftRadius: 8,
-    resizeMode: 'cover',
-  },
-  productName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginStart: 8,
-    marginTop: 8,
-    marginEnd: 8,
-  },
-  productPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#F48C06',
-    marginStart: 8,
-    marginTop: 8,
-    marginEnd: 8,
-  },
-  recommendedGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
-  },
-  recommendedCard: {
-    flex: 0.51,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginRight: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    overflow: 'hidden',
+    marginBottom: 4,
+  },
+  productImage: {
+    width: '100%',
+    height: 100,
+    resizeMode: 'cover',
+  },
+  productInfo: {
+    padding: 12,
+  },
+  productName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 4,
+  },
+  productPrice: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#F48C06',
+  },
+
+  // Recommandé pour vous - Grid
+  recommendedGrid: {
+    gap: 12,
+  },
+  recommendedRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  recommendedCard: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    overflow: 'hidden',
   },
   recommendedImage: {
     width: '100%',
-    height: 150,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    height: 120,
     resizeMode: 'cover',
   },
+  recommendedInfo: {
+    padding: 12,
+  },
   recommendedName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 8,
-    marginStart: 8,
-    marginEnd: 8,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 4,
   },
   recommendedPrice: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 8,
-    marginStart: 8,
-    marginEnd: 8,
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#2D3748',
+    marginBottom: 2,
   },
   oldPrice: {
-    fontSize: 14,
-    color: '#999',
+    fontSize: 12,
+    color: '#9CA3AF',
     textDecorationLine: 'line-through',
+    fontWeight: '400',
   },
   ordersText: {
     fontSize: 12,
-    color: '#555',
-    marginTop: 8,
-    marginStart: 8,
-    marginEnd: 8,
-    marginBottom: 8,
-  },
-  scrollContent: {
-    paddingBottom: 20, // Add some padding at the bottom for better scrolling
-  },
-  debugButton: {
-    padding: 5,
-  },
-
-  badge: {
-    position: 'absolute',
-    right: -2,  // ajuste la position selon ton besoin
-    top: -2,
-    backgroundColor: 'orange',
-    borderRadius: 6,
-    width: 12,
-    height: 12,
+    color: '#6B7280',
+    marginTop: 2,
   },
 });
 

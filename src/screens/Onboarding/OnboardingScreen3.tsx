@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Image, TouchableOpacity, Dimensions, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -11,7 +11,6 @@ type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const { width, height } = Dimensions.get('window');
 
 const OnboardingScreen3 = () => {
-
     const navigation = useNavigation<OnboardingNavigationProp>();
     const rootNavigation = useNavigation<RootNavigationProp>();
   
@@ -32,44 +31,45 @@ const OnboardingScreen3 = () => {
     
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor="#fff" barStyle="dark-content" translucent={false}  />
       <ImageBackground
         source={require('../../assets/images/perso3.jpg')}
         style={styles.imageBackground}
       >
         <SafeAreaView style={styles.header}>
-          <TouchableOpacity style={styles.headerButton} onPress={handlePreviousPress}>
+          <TouchableOpacity onPress={handlePreviousPress}>
             <Text style={styles.headerButtonText}>← précédent</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerButton} onPress={handleSkipPress}>
+          <TouchableOpacity onPress={handleSkipPress}>
             <Text style={styles.headerButtonText}>passer →</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </ImageBackground>
 
       <View style={styles.contentContainer}>
-        <SafeAreaView style={styles.contentWrapper}>
-          <Image
-            source={require('../../assets/images/logo2.png')}
-            style={styles.icon}
-          />
-          
-          <Text style={styles.titleText}>Commandez en toute simplicité</Text>
-          
-
-          <Text style={styles.descriptionText}>
-          Recherchez, réservez ou achetez immédiatement vos produits. Suivez l'avancement de  votre commande en temps réel, de la ferme jusqu'à votre porte.
-          </Text>
-
-          <View style={styles.paginationContainer}>
-            <View style={styles.paginationDot} />
-            <View style={styles.paginationDot} />
-            <View style={[styles.paginationDot, styles.activeDot]} />
-            <View style={styles.paginationDot} />
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.mainContent}>
+            <Image
+              source={require('../../assets/images/logo2.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.titleText}>Commandez en toute simplicité</Text>
+            <Text style={styles.descriptionText}>
+              Recherchez, réservez ou achetez immédiatement vos produits. Suivez l'avancement de votre commande en temps réel, de la ferme jusqu'à votre porte.
+            </Text>
           </View>
 
-          <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
-            <Text style={styles.nextButtonText}>Next</Text>
-          </TouchableOpacity>
+          <View style={styles.bottomContainer}>
+            <View style={styles.paginationContainer}>
+              <View style={styles.paginationDot} />
+              <View style={styles.paginationDot} />
+              <View style={[styles.paginationDot, styles.activeDot]} />
+              <View style={styles.paginationDot} />
+            </View>
+            <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
+              <Text style={styles.nextButtonText}>Next</Text>
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
       </View>
     </View>
@@ -83,36 +83,37 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     width: width,
-    height: height * 0.5102,
-    padding: 20,
+    height: height * 0.55,
+    paddingTop: 16,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  headerButton: {
-    padding: 10,
-  },
   headerButtonText: {
+    padding: 10,
     color: 'white',
-    fontSize: 16,
+    backgroundColor: 'rgba(60, 57, 57, 0.4)',
     fontWeight: 'bold',
   },
   contentContainer: {
-    flex: 0.5,
+    flex: 1,
     backgroundColor: '#fff',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     marginTop: -30,
-    paddingTop: 40,
-    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingHorizontal: 16,
     alignItems: 'center',
   },
-  contentWrapper: {
+  safeArea: {
+    flex: 1,
+    width: '100%',
+  },
+  mainContent: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-around',
-    width: '100%',
+    justifyContent: 'center',
   },
   icon: {
     width: 60,
@@ -127,19 +128,24 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
     lineHeight: 35,
-  
   },
   descriptionText: {
-    textAlign: 'center',
+    textAlign: 'justify',
     fontSize: 14,
     color: '#555',
-    lineHeight: 24,
-    marginVertical: 20,
+    lineHeight: 18,
+    marginStart: 48,
+    marginEnd: 48,
+    marginVertical: 24,
+  },
+  bottomContainer: {
+    alignItems: 'center',
+    paddingBottom: 20,
   },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 16,
     marginTop: 8,
   },
   paginationDot: {
@@ -158,13 +164,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 100,
     borderRadius: 30,
-    marginBottom : 24,
   },
   nextButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-    
   },
 });
 

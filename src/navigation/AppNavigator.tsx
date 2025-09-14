@@ -70,8 +70,8 @@ function MainTabNavigator() {
           backgroundColor: '#fff',
           borderTopWidth: 1,
           borderTopColor: '#E5E7EB',
-          height: 60,
-          paddingBottom: 6,
+          height: 64,
+          paddingBottom: 8,
         },
       })}
     >

@@ -8,7 +8,6 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import TabNavigatorWrapper from '../components/TabNavigatorWrapper';
 
 type MenuItem = {
   id: string;
@@ -88,7 +87,6 @@ export default function ProfileScreen() {
   );
 
   return (
-    <TabNavigatorWrapper>
       <SafeAreaView style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* En-tête du profil */}
@@ -127,14 +125,14 @@ export default function ProfileScreen() {
           </View>
         </ScrollView>
       </SafeAreaView>
-    </TabNavigatorWrapper>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
+    paddingBottom: -24,
   },
   profileHeader: {
     backgroundColor: '#FFFFFF',

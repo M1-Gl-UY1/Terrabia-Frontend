@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -38,29 +37,33 @@ const OnboardingScreen = () => {
       </ImageBackground>
 
       <View style={styles.contentContainer}>
-        <SafeAreaView style={styles.contentWrapper}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.welcomeText}>BIENVENU SUR</Text>
-            <View style={styles.logoContainer}>
-              <Text style={styles.komBText}>KOM-B!</Text>
-              <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.mainContent}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.welcomeText}>BIENVENU SUR</Text>
+              <View style={styles.logoContainer}>
+                <Text style={styles.komBText}>KOM-B!</Text>
+                <Image source={require('../../assets/images/logo_sans_fond.png')} style={styles.logo} />
+              </View>
             </View>
-          </View>
-          
-          <Text style={styles.descriptionText}>
-            Accédez Directement Aux Récoltes De Nos Producteurs Locaux. Mangez Des Produits Frais, De Saison, Et De Qualité, Livrés Près De Chez Vous.
-          </Text>
-
-          <View style={styles.paginationContainer}>
-            <View style={[styles.paginationDot, styles.activeDot]} />
-            <View style={styles.paginationDot} />
-            <View style={styles.paginationDot} />
-            <View style={styles.paginationDot} />
+            
+            <Text style={styles.descriptionText}>
+              Accédez Directement Aux Récoltes De Nos Producteurs Locaux. Mangez Des Produits Frais, De Saison, Et De Qualité, Livrés Près De Chez Vous.
+            </Text>
           </View>
 
-          <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
-            <Text style={styles.nextButtonText}>Next</Text>
-          </TouchableOpacity>
+          <View style={styles.bottomContainer}>
+            <View style={styles.paginationContainer}>
+              <View style={[styles.paginationDot, styles.activeDot]} />
+              <View style={styles.paginationDot} />
+              <View style={styles.paginationDot} />
+              <View style={styles.paginationDot} />
+            </View>
+
+            <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
+              <Text style={styles.nextButtonText}>Next</Text>
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
       </View>
     </View>
@@ -77,16 +80,16 @@ const styles = StyleSheet.create({
     height: height * 0.58,
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
-    padding: 20,
+    paddingTop: 20,
     resizeMode: 'center',
     position : "relative",
     opacity: 3,
     
   },
   skipButton: {
+    marginTop: 16,
     padding: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-    borderRadius: 20,
+    backgroundColor: 'rgba(123, 116, 116, 0.4)',
   },
   skipButtonText: {
     color: 'white',
@@ -94,7 +97,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   contentContainer: {
-    flex: 0.7,
+    flex: 1,
     backgroundColor: '#fff',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -104,18 +107,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     
   },
-  contentWrapper: {
+  safeArea: {
+    flex: 1,
+    width: '100%',
+  },
+  mainContent: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-around',
-    width: '100%',
+    justifyContent: 'center',
   },
   titleContainer: {
     alignItems: 'center',
   },
   welcomeText: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: '900',
     color: '#333',
     letterSpacing: 1,
     position : "relative",
@@ -139,16 +145,22 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   descriptionText: {
-    textAlign: 'center',
+    textAlign: 'justify',
     fontSize: 14,
     color: '#555',
-    lineHeight: 24,
+    marginStart: 48,
+    marginEnd: 48,
+    lineHeight: 18,
     marginVertical: 20,
+  },
+  bottomContainer: {
+    alignItems: 'center',
+    paddingBottom: 20,
   },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 16,
     marginTop: 8,
   },
   paginationDot: {
@@ -168,7 +180,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 100,
     alignItems : 'center',
     borderRadius: 30,
-    marginBottom : 24,
   },
   nextButtonText: {
     color: '#fff',

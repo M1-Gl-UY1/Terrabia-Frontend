@@ -11,7 +11,6 @@ type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const { width, height } = Dimensions.get('window');
 
 const OnboardingScreen4 = () => {
-
     const navigation = useNavigation<OnboardingNavigationProp>();
     const rootNavigation = useNavigation<RootNavigationProp>();
   
@@ -32,35 +31,36 @@ const OnboardingScreen4 = () => {
         style={styles.imageBackground}
       >
         <SafeAreaView style={styles.header}>
-          <TouchableOpacity style={styles.headerButton} onPress={handlePreviousPress}>
+          <TouchableOpacity onPress={handlePreviousPress}>
             <Text style={styles.headerButtonText}>← précédent</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </ImageBackground>
 
       <View style={styles.contentContainer}>
-        <SafeAreaView style={styles.contentWrapper}>
-          <Image
-            source={require('../../assets/images/logo4.png')}
-            style={styles.icon}
-          />
-          
-          <Text style={styles.titleText}>Prêt à goûter la différence ?</Text>
-
-          <Text style={styles.descriptionText}>
-          découvrez les trésors de nos régions et commencer votre première commande.  
-          </Text>
-
-          <View style={styles.paginationContainer}>
-            <View style={styles.paginationDot} />
-            <View style={styles.paginationDot} />
-            <View style={styles.paginationDot} />
-            <View style={[styles.paginationDot, styles.activeDot]} />
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.mainContent}>
+            <Image
+              source={require('../../assets/images/logo4.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.titleText}>Prêt à goûter la différence ?</Text>
+            <Text style={styles.descriptionText}>
+              Découvrez les trésors de nos régions et commencez votre première commande.
+            </Text>
           </View>
 
-          <TouchableOpacity style={styles.finishButton} onPress={handleFinishPress}>
-            <Text style={styles.finishButtonText}>Commencer l'aventure</Text>
-          </TouchableOpacity>
+          <View style={styles.bottomContainer}>
+            <View style={styles.paginationContainer}>
+              <View style={styles.paginationDot} />
+              <View style={styles.paginationDot} />
+              <View style={styles.paginationDot} />
+              <View style={[styles.paginationDot, styles.activeDot]} />
+            </View>
+            <TouchableOpacity style={styles.finishButton} onPress={handleFinishPress}>
+              <Text style={styles.finishButtonText}>Commencer l'aventure</Text>
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
       </View>
     </View>
@@ -74,23 +74,22 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     width: width,
-    height: height * 0.52,
-    padding: 20,
+    height: height * 0.55,
+    paddingTop: 16,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
-  headerButton: {
-    padding: 10,
-  },
   headerButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+    padding: 10,
+    backgroundColor: 'rgba(60, 57, 57, 0.4)',
   },
   contentContainer: {
-    flex: 0.6,
+    flex: 1,
     backgroundColor: '#fff',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -99,11 +98,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
   },
-  contentWrapper: {
+  safeArea: {
+    flex: 1,
+    width: '100%',
+  },
+  mainContent: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-around',
-    width: '100%',
+    justifyContent: 'center',
   },
   icon: {
     width: 60,
@@ -126,10 +128,15 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginVertical: 20,
   },
+  bottomContainer: {
+    alignItems: 'center',
+    paddingBottom: 20,
+  },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
+    marginTop: 8,
   },
   paginationDot: {
     width: 10,
@@ -152,8 +159,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-    width : 190,
-    textAlign : 'center',
+    width: 190,
+    textAlign: 'center',
   },
 });
 

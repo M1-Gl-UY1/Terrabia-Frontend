@@ -46,7 +46,6 @@ export default function SearchScreen() {
   };
 
   return (
-    <TabNavigatorWrapper>
       <SafeAreaView style={styles.container}>
         {/* Barre de navigation avec bouton retour */}
         <View style={styles.header}>
@@ -111,7 +110,6 @@ export default function SearchScreen() {
           </View>
         </ScrollView>
       </SafeAreaView>
-    </TabNavigatorWrapper>
   );
 }
 

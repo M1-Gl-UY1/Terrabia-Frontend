@@ -8,7 +8,6 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import TabNavigatorWrapper from '../components/TabNavigatorWrapper';
 
 type CartItem = {
   id: string;
@@ -92,52 +91,50 @@ export default function CartScreen() {
   );
 
   return (
-    <TabNavigatorWrapper>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Panier</Text>
-          <Text style={styles.subtitle}>{cartItems.length} article(s)</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Panier</Text>
+        <Text style={styles.subtitle}>{cartItems.length} article(s)</Text>
+      </View>
+      
+      {cartItems.length === 0 ? (
+        <View style={styles.emptyCart}>
+          <Text style={styles.emptyCartIcon}>🛒</Text>
+          <Text style={styles.emptyCartTitle}>Votre panier est vide</Text>
+          <Text style={styles.emptyCartSubtitle}>
+            Ajoutez des produits pour commencer vos achats
+          </Text>
         </View>
-        
-        {cartItems.length === 0 ? (
-          <View style={styles.emptyCart}>
-            <Text style={styles.emptyCartIcon}>🛒</Text>
-            <Text style={styles.emptyCartTitle}>Votre panier est vide</Text>
-            <Text style={styles.emptyCartSubtitle}>
-              Ajoutez des produits pour commencer vos achats
-            </Text>
-          </View>
-        ) : (
-          <>
-            <ScrollView 
-              contentContainerStyle={styles.content}
-              showsVerticalScrollIndicator={false}
-            >
-              {cartItems.map(renderCartItem)}
-            </ScrollView>
+      ) : (
+        <>
+          <ScrollView 
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+          >
+            {cartItems.map(renderCartItem)}
+          </ScrollView>
 
-            <View style={styles.summary}>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Sous-total</Text>
-                <Text style={styles.summaryValue}>{totalPrice} FCFA</Text>
-              </View>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Livraison</Text>
-                <Text style={styles.summaryValue}>{deliveryFee} FCFA</Text>
-              </View>
-              <View style={[styles.summaryRow, styles.totalRow]}>
-                <Text style={styles.totalLabel}>Total</Text>
-                <Text style={styles.totalValue}>{finalTotal} FCFA</Text>
-              </View>
-              
-              <Pressable style={styles.checkoutButton}>
-                <Text style={styles.checkoutButtonText}>Commander maintenant</Text>
-              </Pressable>
+          <View style={styles.summary}>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Sous-total</Text>
+              <Text style={styles.summaryValue}>{totalPrice} FCFA</Text>
             </View>
-          </>
-        )}
-      </SafeAreaView>
-    </TabNavigatorWrapper>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Livraison</Text>
+              <Text style={styles.summaryValue}>{deliveryFee} FCFA</Text>
+            </View>
+            <View style={[styles.summaryRow, styles.totalRow]}>
+              <Text style={styles.totalLabel}>Total</Text>
+              <Text style={styles.totalValue}>{finalTotal} FCFA</Text>
+            </View>
+            
+            <Pressable style={styles.checkoutButton}>
+              <Text style={styles.checkoutButtonText}>Commander maintenant</Text>
+            </Pressable>
+          </View>
+        </>
+      )}
+    </SafeAreaView>
   );
 }
 
@@ -145,6 +142,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+    paddingBottom: -24,
   },
   header: {
     paddingHorizontal: 16,

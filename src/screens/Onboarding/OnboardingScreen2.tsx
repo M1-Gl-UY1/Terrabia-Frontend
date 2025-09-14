@@ -11,7 +11,6 @@ type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const { width, height } = Dimensions.get('window');
 
 const OnboardingScreen2 = () => {
-
     const navigation = useNavigation<OnboardingNavigationProp>();
     const rootNavigation = useNavigation<RootNavigationProp>();
   
@@ -37,39 +36,40 @@ const OnboardingScreen2 = () => {
         style={styles.imageBackground}
       >
         <SafeAreaView style={styles.header}>
-          <TouchableOpacity style={styles.headerButton} onPress={handlePreviousPress}>
+          <TouchableOpacity style={styles.skipButton} onPress={handlePreviousPress}>
             <Text style={styles.headerButtonText}>← précédent</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerButton} onPress={handleSkipPress}>
+          <TouchableOpacity style={styles.skipButton} onPress={handleSkipPress}>
             <Text style={styles.headerButtonText}>passer →</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </ImageBackground>
 
       <View style={styles.contentContainer}>
-        <SafeAreaView style={styles.contentWrapper}>
-          <Image
-            source={require('../../assets/images/logo3.png')}
-            style={styles.icon}
-          />
-          
-          <Text style={styles.titleText}>Soutenez</Text>
-          <Text style={styles.titleText}>l'agriculture locale</Text>
-
-          <Text style={styles.descriptionText}>
-            Chaque Achat Sur Kom-B Aide À Réduire Les Pertes Après Récolte Et Garantit Une Juste Rémunération Pour Les Producteurs. Ensemble, Luttons Contre Le Gaspillage Alimentaire !
-          </Text>
-
-          <View style={styles.paginationContainer}>
-            <View style={styles.paginationDot} />
-            <View style={[styles.paginationDot, styles.activeDot]} />
-            <View style={styles.paginationDot} />
-            <View style={styles.paginationDot} />
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.mainContent}>
+            <Image
+              source={require('../../assets/images/logo3.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.titleText}>Soutenez</Text>
+            <Text style={styles.titleText}>l'agriculture locale</Text>
+            <Text style={styles.descriptionText}>
+              Chaque Achat Sur Kom-B Aide À Réduire Les Pertes Après Récolte Et Garantit Une Juste Rémunération Pour Les Producteurs. Ensemble, Luttons Contre Le Gaspillage Alimentaire !
+            </Text>
           </View>
 
-          <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
-            <Text style={styles.nextButtonText}>Next</Text>
-          </TouchableOpacity>
+          <View style={styles.bottomContainer}>
+            <View style={styles.paginationContainer}>
+              <View style={styles.paginationDot} />
+              <View style={[styles.paginationDot, styles.activeDot]} />
+              <View style={styles.paginationDot} />
+              <View style={styles.paginationDot} />
+            </View>
+            <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
+              <Text style={styles.nextButtonText}>Next</Text>
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
       </View>
     </View>
@@ -81,41 +81,41 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-
   imageBackground: {
     width: width,
     height: height * 0.55,
-    padding: 20,
-    
+    paddingTop: 16,
   },
-
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  headerButton: {
-    padding: 8,
+  skipButton: {
+    padding: 10,
+    backgroundColor: 'rgba(60, 57, 57, 0.4)',
   },
   headerButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
   },
   contentContainer: {
-    flex: 0.4,
+    flex: 1,
     backgroundColor: '#fff',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     marginTop: -50,
-    paddingTop: 40,
-    paddingHorizontal: 10,
+    paddingTop: 16,
+    paddingHorizontal: 16,
     alignItems: 'center',
   },
-  contentWrapper: {
+  safeArea: {
+    flex: 1,
+    width: '100%',
+  },
+  mainContent: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-around',
-    width: '100%',
+    justifyContent: 'center',
   },
   icon: {
     width: 40,
@@ -132,16 +132,22 @@ const styles = StyleSheet.create({
     lineHeight: 35,
   },
   descriptionText: {
-    textAlign: 'center',
     fontSize: 14,
+    textAlign: 'justify',
+    marginStart: 48,
+    marginEnd: 48,
+    lineHeight: 18,
     color: '#555',
-    lineHeight: 24,
-    marginVertical: 10,
+    marginVertical: 24,
+  },
+  bottomContainer: {
+    alignItems: 'center',
+    paddingBottom: 20,
   },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 16,
     marginTop: 8,
   },
   paginationDot: {
@@ -160,7 +166,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 100,
     borderRadius: 30,
-    marginBottom : 24,
   },
   nextButtonText: {
     color: '#fff',
