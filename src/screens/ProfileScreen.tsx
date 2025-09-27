@@ -12,116 +12,155 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 type MenuItem = {
   id: string;
   title: string;
-  subtitle?: string;
   icon: string;
   action: () => void;
 };
 
 export default function ProfileScreen() {
   const user = {
-    name: 'Jean Dupont',
-    email: 'jean.dupont@email.com',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=60',
-    memberSince: '2023',
-    totalOrders: 15,
+    name: 'Gisele Tiafo',
+    phone: '620 356 221',
+    avatar: require('../assets/profil_gisele.png'),
   };
+
+  const quickActions = [
+    {
+      id: '1',
+      title: 'Commandes',
+      icon: '🎯',
+      action: () => console.log('Commandes'),
+    },
+    {
+      id: '2',
+      title: 'Service Client',
+      icon: '🎧',
+      action: () => console.log('Service Client'),
+    },
+    {
+      id: '3',
+      title: 'En Attente De Commentaire',
+      icon: '💬',
+      action: () => console.log('Commentaire'),
+    },
+    {
+      id: '4',
+      title: 'Retour Et Remboursement',
+      icon: '📦',
+      action: () => console.log('Retour'),
+    },
+  ];
 
   const menuItems: MenuItem[] = [
     {
       id: '1',
-      title: 'Mes commandes',
-      subtitle: 'Suivez vos commandes en cours',
-      icon: '📦',
-      action: () => console.log('Mes commandes'),
+      title: 'Liste de souhaits',
+      icon: '🤍',
+      action: () => console.log('Liste de souhaits'),
     },
     {
       id: '2',
-      title: 'Adresses de livraison',
-      subtitle: 'Gérez vos adresses',
-      icon: '📍',
-      action: () => console.log('Adresses'),
+      title: 'Consulter récemments',
+      icon: '📋',
+      action: () => console.log('Récemments'),
+    },
+  ];
+
+  const settingsItems: MenuItem[] = [
+    {
+      id: '1',
+      title: 'Langues',
+      icon: '',
+      action: () => console.log('Langues'),
+    },
+    {
+      id: '2',
+      title: 'Reinitialiser Mot De Passe',
+      icon: '',
+      action: () => console.log('Mot de passe'),
     },
     {
       id: '3',
-      title: 'Méthodes de paiement',
-      subtitle: 'Cartes et comptes bancaires',
-      icon: '💳',
-      action: () => console.log('Paiement'),
+      title: 'Guide Utilisateur',
+      icon: '',
+      action: () => console.log('Guide'),
     },
     {
       id: '4',
-      title: 'Préférences',
-      subtitle: 'Notifications et confidentialité',
-      icon: '⚙️',
-      action: () => console.log('Préférences'),
+      title: 'Politique De Retour',
+      icon: '',
+      action: () => console.log('Politique'),
     },
     {
       id: '5',
-      title: 'Aide et support',
-      subtitle: 'FAQ et contact',
-      icon: '❓',
-      action: () => console.log('Aide'),
+      title: 'A Propos De KOM-B',
+      icon: '',
+      action: () => console.log('A Propos'),
     },
     {
       id: '6',
-      title: 'À propos',
-      subtitle: 'Version 1.0.0',
-      icon: 'ℹ️',
-      action: () => console.log('À propos'),
+      title: 'Devenir Vendeur',
+      icon: '',
+      action: () => console.log('Vendeur'),
+    },
+    {
+      id: '7',
+      title: 'Suprimer Mon Compte',
+      icon: '',
+      action: () => console.log('Supprimer'),
     },
   ];
+
+  const renderQuickAction = (item: any) => (
+    <Pressable key={item.id} style={styles.quickActionItem} onPress={item.action}>
+      <Text style={styles.quickActionIcon}>{item.icon}</Text>
+      <Text style={styles.quickActionTitle}>{item.title}</Text>
+    </Pressable>
+  );
 
   const renderMenuItem = (item: MenuItem) => (
     <Pressable key={item.id} style={styles.menuItem} onPress={item.action}>
       <View style={styles.menuItemLeft}>
-        <Text style={styles.menuIcon}>{item.icon}</Text>
-        <View style={styles.menuText}>
-          <Text style={styles.menuTitle}>{item.title}</Text>
-          {item.subtitle && (
-            <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-          )}
-        </View>
+        {item.icon && <Text style={styles.menuIcon}>{item.icon}</Text>}
+        <Text style={styles.menuTitle}>{item.title}</Text>
       </View>
-      <Text style={styles.menuArrow}>›</Text>
     </Pressable>
   );
 
   return (
       <SafeAreaView style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {/* En-tête du profil */}
-          <View style={styles.profileHeader}>
-            <Image source={{ uri: user.avatar }} style={styles.avatar} />
-            <View style={styles.profileInfo}>
-              <Text style={styles.userName}>{user.name}</Text>
-              <Text style={styles.userEmail}>{user.email}</Text>
-              <View style={styles.profileStats}>
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{user.totalOrders}</Text>
-                  <Text style={styles.statLabel}>Commandes</Text>
-                </View>
-                <View style={styles.statDivider} />
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{user.memberSince}</Text>
-                  <Text style={styles.statLabel}>Membre depuis</Text>
-                </View>
+          {/* En-tête avec fond orange */}
+          <View style={styles.orangeHeader}>
+            {/* Profil utilisateur */}
+            <View style={styles.profileCard}>
+              <Image source={ user.avatar } style={styles.avatar} />
+              <View style={styles.profileInfo}>
+                <Text style={styles.userName}>{user.name}</Text>
+                <Text style={styles.userPhone}>{user.phone}</Text>
               </View>
+              <Text style={styles.editIcon}>✏️</Text>
             </View>
           </View>
 
-          {/* Menu principal */}
+          {/* Section Ma Commande */}
+          <View style={styles.commandSection}>
+            <Text style={styles.commandTitle}>Ma Commande</Text>
+            <View style={styles.quickActionsGrid}>
+              {quickActions.map(renderQuickAction)}
+            </View>
+          </View>
+
+          {/* Menu avec cœur et liste */}
           <View style={styles.menuSection}>
-            <Text style={styles.sectionTitle}>Paramètres</Text>
-            <View style={styles.menuContainer}>
-              {menuItems.map(renderMenuItem)}
-            </View>
+            {menuItems.map(renderMenuItem)}
           </View>
 
-          {/* Bouton de déconnexion */}
-          <View style={styles.logoutSection}>
-            <Pressable style={styles.logoutButton}>
-              <Text style={styles.logoutButtonText}>Se déconnecter</Text>
-            </Pressable>
+          {/* Section Paramètres */}
+          <View style={styles.settingsSection}>
+            <Text style={styles.sectionTitle}>Paramètres</Text>
+            <View style={styles.settingsContainer}>
+              {settingsItems.map(renderMenuItem)}
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -131,83 +170,92 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F5F5F5',
+  },
+  orangeHeader: {
+    backgroundColor: '#FF7722',
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  profileCard: {
     backgroundColor: '#FFFFFF',
-    paddingBottom: -24,
-  },
-  profileHeader: {
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 20,
-    paddingVertical: 24,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 16,
-  },
-  profileInfo: {
-    alignItems: 'center',
-  },
-  userName: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1F2937',
-    marginBottom: 4,
-  },
-  userEmail: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 20,
-  },
-  profileStats: {
+    borderRadius: 12,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  statItem: {
-    alignItems: 'center',
-    paddingHorizontal: 20,
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 16,
   },
-  statValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#F27A22',
-    marginBottom: 4,
+  profileInfo: {
+    flex: 1,
   },
-  statLabel: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  statDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: '#E5E7EB',
-    marginHorizontal: 20,
-  },
-  menuSection: {
-    marginTop: 24,
-  },
-  sectionTitle: {
+  userName: {
     fontSize: 18,
     fontWeight: '600',
     color: '#1F2937',
-    marginHorizontal: 20,
-    marginBottom: 16,
+    marginBottom: 4,
   },
-  menuContainer: {
+  userPhone: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  editIcon: {
+    fontSize: 20,
+    color: '#6B7280',
+  },
+  commandSection: {
     backgroundColor: '#FFFFFF',
-    marginHorizontal: 20,
-    borderRadius: 12,
-    overflow: 'hidden',
+    marginTop: -20,
+    paddingTop: 30,
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
+  commandTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 20,
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  quickActionItem: {
+    width: '22%',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  quickActionIcon: {
+    fontSize: 24,
+    marginBottom: 8,
+  },
+  quickActionTitle: {
+    fontSize: 11,
+    color: '#374151',
+    textAlign: 'center',
+    lineHeight: 14,
+  },
+  menuSection: {
+    backgroundColor: '#FFFFFF',
+    marginTop: 8,
+    paddingHorizontal: 16,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingVertical: 16,
-    paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -217,43 +265,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuIcon: {
-    fontSize: 24,
-    marginRight: 16,
+    fontSize: 20,
+    marginRight: 12,
     width: 24,
-    textAlign: 'center',
-  },
-  menuText: {
-    flex: 1,
   },
   menuTitle: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#1F2937',
-    marginBottom: 2,
+    color: '#374151',
+    fontWeight: '400',
   },
-  menuSubtitle: {
-    fontSize: 14,
-    color: '#6B7280',
+  settingsSection: {
+    backgroundColor: '#FFFFFF',
+    marginTop: 8,
+    paddingTop: 20,
   },
-  menuArrow: {
-    fontSize: 20,
-    color: '#9CA3AF',
-    fontWeight: '300',
-  },
-  logoutSection: {
-    marginTop: 32,
-    marginHorizontal: 20,
-    marginBottom: 24,
-  },
-  logoutButton: {
-    backgroundColor: '#EF4444',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  logoutButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: '600',
+    color: '#1F2937',
+    marginHorizontal: 16,
+    marginBottom: 16,
+  },
+  settingsContainer: {
+    paddingHorizontal: 16,
   },
 });

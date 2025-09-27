@@ -15,6 +15,16 @@ const HomeScreen = () => {
   const navigation = useNavigation<HomeNavigationProp>();
   const hasUnreadNotifications = useAppSelector(state => state.notifications.unreadCount > 0);
 
+  // Données des produits (simulées) avec oldPrice
+  const products = [
+    { name: 'Tige de manioc', price: '3000 FCFA', oldPrice: '3500 FCFA', image: require('../assets/images/manioc.png'), description: 'Manioc frais cultivé localement.' },
+    { name: 'Cageot de tomates', price: '2500 FCFA', oldPrice: '3000 FCFA', image: require('../assets/images/tomate.png'), description: 'Tomates rouges et juteuses.' },
+    { name: 'Tige de manioc', price: '2500 FCFA', oldPrice: '3200 FCFA', image: require('../assets/images/manioc.png'), description: 'Manioc frais cultivé localement.' },
+    { name: 'Noix', price: '2700 FCFA', oldPrice: '3000 FCFA', image: require('../assets/images/noix.png'), description: 'Noix de qualité supérieure.' },
+    { name: 'Pommes', price: '2700 FCFA', oldPrice: '3200 FCFA', image: require('../assets/images/pomme.png'), description: 'Pommes croquantes et savoureuses.' },
+    { name: 'Patates', price: '1500 FCFA', oldPrice: '2000 FCFA', image: require('../assets/images/patate.png'), description: 'Patates douces et tendres.' },
+  ];
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -57,87 +67,54 @@ const HomeScreen = () => {
               <View style={styles.paginationDot} />
             </View>
           </View>
-          
-          <Image 
-            source={require('../assets/images/lot_fruits.png')}  
-          />
+          <Image source={require('../assets/images/lot_fruits.png')} />
         </View>
 
         {/* Section "Offre du jour" */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Offre du jour</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-            {/* Carte de produit 1 */}
-            <View style={styles.productCard}>
-              <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
-              <View style={styles.productInfo}>
-                <Text style={styles.productName}>Tige de manioc</Text>
-                <Text style={styles.productPrice}>3000 FCFA</Text>
-              </View>
-            </View>
-            {/* Carte de produit 2 */}
-            <View style={styles.productCard}>
-              <Image source={require('../assets/images/tomate.png')} style={styles.productImage} />
-              <View style={styles.productInfo}>
-                <Text style={styles.productName}>Cageot de tomates</Text>
-                <Text style={styles.productPrice}>2500 FCFA</Text>
-              </View>
-            </View>
-            {/* Carte de produit 3 */}
-            <View style={styles.productCard}>
-              <Image source={require('../assets/images/manioc.png')} style={styles.productImage} />
-              <View style={styles.productInfo}>
-                <Text style={styles.productName}>Tige de manioc</Text>
-                <Text style={styles.productPrice}>2500 FCFA</Text>
-              </View>
-            </View>
+            {products.slice(0, 3).map((product, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.productCard}
+                onPress={() => navigation.navigate('DetailProduct', { product })}
+              >
+                <Image source={product.image} style={styles.productImage} />
+                <View style={styles.productInfo}>
+                  <Text style={styles.productName}>{product.name}</Text>
+                  <Text style={styles.productPrice}>{product.price}</Text>
+                  <Text style={styles.oldPrice}>{product.oldPrice}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
           </ScrollView>
         </View>
 
         {/* Section "Recommandé pour vous" */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recommandé pour vous</Text>
-          <View style={styles.recommendedGrid}>
-            {/* Première rangée */}
-            <View style={styles.recommendedRow}>
-              <View style={styles.recommendedCard}>
-                <Image source={require('../assets/images/noix.png')} style={styles.recommendedImage} />
-                <View style={styles.recommendedInfo}>
-                  <Text style={styles.recommendedName}>Noix</Text>
-                  <Text style={styles.recommendedPrice}>2700 FCFA <Text style={styles.oldPrice}>3000 FCFA</Text></Text>
-                  <Text style={styles.ordersText}>23 Commandes</Text>
-                </View>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {Array.from({ length: Math.ceil(products.length / 2) }, (_, i) => (
+              <View key={i} style={styles.recommendedRow}>
+                {products.slice(i * 2, i * 2 + 2).map((product, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.recommendedCard}
+                    onPress={() => navigation.navigate('DetailProduct', { product })}
+                  >
+                    <Image source={product.image} style={styles.recommendedImage} />
+                    <View style={styles.recommendedInfo}>
+                      <Text style={styles.recommendedName}>{product.name}</Text>
+                      <Text style={styles.recommendedPrice}>{product.price}</Text>
+                      <Text style={styles.oldPrice}>{product.oldPrice}</Text>
+                      <Text style={styles.ordersText}>23 Commandes</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
               </View>
-              <View style={styles.recommendedCard}>
-                <Image source={require('../assets/images/pomme.png')} style={styles.recommendedImage} />
-                <View style={styles.recommendedInfo}>
-                  <Text style={styles.recommendedName}>Pommes</Text>
-                  <Text style={styles.recommendedPrice}>2700 FCFA</Text>
-                  <Text style={styles.ordersText}>23 Commandes</Text>
-                </View>
-              </View>
-            </View>
-            
-            {/* Deuxième rangée */}
-            <View style={styles.recommendedRow}>
-              <View style={styles.recommendedCard}>
-                <Image source={require('../assets/images/patate.png')} style={styles.recommendedImage} />
-                <View style={styles.recommendedInfo}>
-                  <Text style={styles.recommendedName}>Patates</Text>
-                  <Text style={styles.recommendedPrice}>1500 FCFA</Text>
-                  <Text style={styles.ordersText}>18 Commandes</Text>
-                </View>
-              </View>
-              <View style={styles.recommendedCard}>
-                <Image source={require('../assets/images/manioc.png')} style={styles.recommendedImage} />
-                <View style={styles.recommendedInfo}>
-                  <Text style={styles.recommendedName}>Manioc</Text>
-                  <Text style={styles.recommendedPrice}>1200 FCFA</Text>
-                  <Text style={styles.ordersText}>31 Commandes</Text>
-                </View>
-              </View>
-            </View>
-          </View>
+            ))}
+          </ScrollView>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -191,27 +168,11 @@ const styles = StyleSheet.create({
 
   // Hero Section
   heroSection: {
-    height: 200,
+    height: 220,
     position: 'relative',
     flexDirection: 'row',
     overflow: 'hidden',
-    backgroundColor : '#FFCB69'
-  },
-  heroBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     backgroundColor: '#FFCB69',
-  },
-  heroLeftContent: {
-    flex: 1,
-    justifyContent: 'space-between',
-    paddingTop: 30,
-    paddingLeft: 20,
-    paddingBottom: 20,
-    zIndex: 1,
   },
   heroTextContainer: {
     flex: 1,
@@ -219,15 +180,15 @@ const styles = StyleSheet.create({
     paddingStart: 24,
   },
   heroTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
-    color: '#ffff',
+    color: '#fff',
     lineHeight: 26,
     marginBottom: 8,
   },
   heroSubtitle: {
-    fontSize: 14,
-    color: '#ffff',
+    fontSize: 12,
+    color: '#fff',
     fontWeight: '500',
   },
   heroImageContainer: {
@@ -239,11 +200,6 @@ const styles = StyleSheet.create({
     zIndex: 2,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  heroFruitsImage: {
-    width: 200,
-    height: 150,
-    resizeMode: 'contain',
   },
   paginationContainer: {
     flexDirection: 'row',
@@ -319,6 +275,7 @@ const styles = StyleSheet.create({
   recommendedRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 8,
     gap: 12,
   },
   recommendedCard: {

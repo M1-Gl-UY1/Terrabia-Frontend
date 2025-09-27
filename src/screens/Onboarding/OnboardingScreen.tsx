@@ -22,7 +22,7 @@ const OnboardingScreen = () => {
 
   // Fonction pour passer l'onboarding et aller à l'écran principal
   const handleSkipPress = () => {
-    rootNavigation.navigate('MainTabs');
+    rootNavigation.navigate('Onboarding4');
   };
   
   return (
@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
     
   },
   skipButton: {
-    marginTop: 16,
     padding: 10,
     backgroundColor: 'rgba(123, 116, 116, 0.4)',
   },

@@ -26,7 +26,7 @@ const OnboardingScreen2 = () => {
   
     // Fonction pour passer l'onboarding et aller à l'écran principal
     const handleSkipPress = () => {
-      rootNavigation.navigate('MainTabs');
+      rootNavigation.navigate('Onboarding4');
     };
     
   return (

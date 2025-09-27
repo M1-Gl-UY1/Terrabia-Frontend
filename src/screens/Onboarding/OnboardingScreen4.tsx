@@ -151,15 +151,15 @@ const styles = StyleSheet.create({
   },
   finishButton: {
     backgroundColor: '#F48C06',
-    paddingVertical: 15,
-    paddingHorizontal: 50,
+    paddingVertical: 16,
+    width: '100%',  
+    alignItems: 'center',
     borderRadius: 30,
   },
   finishButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-    width: 190,
     textAlign: 'center',
   },
 });
