@@ -14,6 +14,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import BottomTabBar from '../components/BottomTabBar';
 import NotifScreen from '../screens/NotifScreen';
 import DetailProductScreen from '../screens/DetailProductScreen';
+import CheckoutScreen from '../screens/CommandeScreen';
 
 export type RootStackParamList = {
   Onboarding: undefined;
@@ -24,6 +25,7 @@ export type RootStackParamList = {
   Search: undefined;
   Notifications: undefined;
   DetailProduct: { product: { name: string; price: string; image: any; description?: string } };
+  Checkout: undefined;
 };
 
 export type OnboardingStackParamList = {
@@ -111,6 +113,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Notifications" component={NotifScreen} />
       <Stack.Screen name="DetailProduct" component={DetailProductScreen} />
+      <Stack.Screen name="Checkout" component={CheckoutScreen} />
     </Stack.Navigator>
   );
 }
