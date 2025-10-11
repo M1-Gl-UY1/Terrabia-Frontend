@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -6,83 +6,40 @@ import {
   ScrollView,
   Pressable,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
+import { useAppSelector, useAppDispatch } from '../store/types';
+import { toggleItemSelection, updateQuantity } from '../store/cartSlice';
+import { CartItem } from '../store/cartSlice';
 
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image: any;
-  unit: string;
-  selected: boolean;
-};
+type CartNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Checkout'>;
 
 export default function CartScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Checkout'>>();
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      name: 'Cageot de tomates',
-      price: 3000,
-      quantity: 2,
-      image: require('../assets/images/tomate.png'),
-      unit: 'CFA',
-      selected: false,
-    },
-    {
-      id: '2',
-      name: 'Pommes de terre',
-      price: 3000,
-      quantity: 2,
-      image: require('../assets/images/pomme.png'),
-      unit: 'CFA',
-      selected: false,
-    },
-    {
-      id: '3',
-      name: 'Noix de palme',
-      price: 3000,
-      quantity: 2,
-      image: require('../assets/images/noix.png'),
-      unit: 'CFA',
-      selected: false,
-    },
-  ]);
+  const navigation = useNavigation<CartNavigationProp>();
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector(state => state.cart.items);
 
-  const toggleItemSelection = (id: string) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, selected: !item.selected } : item
-      )
-    );
+  const handleToggleSelection = (id: string) => {
+    dispatch(toggleItemSelection(id));
   };
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      setCartItems(items => items.filter(item => item.id !== id));
-    } else {
-      setCartItems(items =>
-        items.map(item =>
-          item.id === id ? { ...item, quantity: newQuantity } : item
-        )
-      );
-    }
+  const handleUpdateQuantity = (id: string, newQuantity: number) => {
+    dispatch(updateQuantity({ id, quantity: newQuantity }));
   };
 
   const selectedItems = cartItems.filter(item => item.selected);
   const selectedCount = selectedItems.length;
-  const totalPrice = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalPrice = selectedItems.reduce((sum, item) => sum + (item.priceNumeric * item.quantity), 0);
 
   const renderCartItem = (item: CartItem) => (
     <Pressable 
       key={item.id} 
       style={[styles.cartItem, item.selected && styles.selectedItem]}
-      onPress={() => toggleItemSelection(item.id)}
+      onPress={() => handleToggleSelection(item.id)}
     >
       <View style={styles.selectionContainer}>
         <View style={[styles.checkbox, item.selected && styles.checkedBox]}>
@@ -94,8 +51,7 @@ export default function CartScreen() {
       
       <View style={styles.itemInfo}>
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemUnit}>Unité : {item.price} {item.unit}</Text>
-        <Text style={styles.itemQuantityLabel}>Qté : {String(item.quantity).padStart(2, '0')}</Text>
+        <Text style={styles.itemUnit}>Unité : {item.price}</Text>
         
         <View style={styles.quantityContainer}>
           <Text style={styles.quantityLabel}>Qté :</Text>
@@ -103,7 +59,7 @@ export default function CartScreen() {
             style={styles.quantityButton}
             onPress={(e) => {
               e.stopPropagation();
-              updateQuantity(item.id, item.quantity - 1);
+              handleUpdateQuantity(item.id, item.quantity - 1);
             }}
           >
             <Text style={styles.quantityButtonText}>-</Text>
@@ -113,7 +69,7 @@ export default function CartScreen() {
             style={styles.quantityButton}
             onPress={(e) => {
               e.stopPropagation();
-              updateQuantity(item.id, item.quantity + 1);
+              handleUpdateQuantity(item.id, item.quantity + 1);
             }}
           >
             <Text style={styles.quantityButtonText}>+</Text>
@@ -122,7 +78,7 @@ export default function CartScreen() {
       </View>
       
       <View style={styles.itemTotal}>
-        <Text style={styles.itemTotalText}>{item.price * item.quantity} CFA</Text>
+        <Text style={styles.itemTotalText}>{item.priceNumeric * item.quantity} CFA</Text>
       </View>
     </Pressable>
   );
@@ -133,32 +89,45 @@ export default function CartScreen() {
         <Text style={styles.title}>Articles ({String(cartItems.length).padStart(2, '0')})</Text>
       </View>
       
-      <ScrollView 
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {cartItems.map(renderCartItem)}
-      </ScrollView>
-
-      <View style={styles.summary}>
-        <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Total:</Text>
-          <Text style={styles.totalValue}>{totalPrice} CFA</Text>
+      {cartItems.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Votre panier est vide</Text>
+          <TouchableOpacity
+            style={styles.shopButton}
+            onPress={() => navigation.navigate('MainTabs')}
+          >
+            <Text style={styles.shopButtonText}>Commencer vos achats</Text>
+          </TouchableOpacity>
         </View>
-        
-        <Pressable 
-          style={[styles.paymentButton, selectedCount === 0 && styles.disabledButton]}
-          disabled={selectedCount === 0}
-          onPress={() => {
-            // naviage vers l'écran de commande
-            navigation.navigate('Checkout');
-          }}
-        >
-          <Text style={styles.paymentButtonText}>
-            Payer maintenant
-          </Text>
-        </Pressable>
-      </View>
+      ) : (
+        <>
+          <ScrollView 
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+          >
+            {cartItems.map(renderCartItem)}
+          </ScrollView>
+
+          <View style={styles.summary}>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Total:</Text>
+              <Text style={styles.totalValue}>{totalPrice} CFA</Text>
+            </View>
+            
+            <Pressable 
+              style={[styles.paymentButton, selectedCount === 0 && styles.disabledButton]}
+              disabled={selectedCount === 0}
+              onPress={() => {
+                navigation.navigate('Checkout');
+              }}
+            >
+              <Text style={styles.paymentButtonText}>
+                Payer maintenant ({selectedCount})
+              </Text>
+            </Pressable>
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 }
@@ -180,6 +149,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#1F2937',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 20,
+  },
+  shopButton: {
+    backgroundColor: '#FF6B35',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  shopButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   content: {
     padding: 16,
@@ -237,11 +228,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   itemUnit: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginBottom: 2,
-  },
-  itemQuantityLabel: {
     fontSize: 12,
     color: '#6B7280',
     marginBottom: 8,

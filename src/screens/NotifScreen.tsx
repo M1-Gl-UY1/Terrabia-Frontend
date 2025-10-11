@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    marginTop : 20
     
   },
   header: {
@@ -90,7 +89,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
-    marginRight: 2,
   },
   backButtonText: {
     fontSize: 20,

@@ -1,13 +1,13 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, Pressable, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
-import TabNavigatorWrapper from '../components/TabNavigatorWrapper';
-import Inspector from '../components/Inspector';
-import { Search, Bell, Info, Bug } from 'lucide-react-native';
+import { Search, Bell } from 'lucide-react-native';
 import { useAppSelector } from '../store/types';
+import { productService } from '../services/ProductService';
+import { Product } from '../types/Product';
 
 type HomeNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainTabs'>;
 
@@ -15,15 +15,32 @@ const HomeScreen = () => {
   const navigation = useNavigation<HomeNavigationProp>();
   const hasUnreadNotifications = useAppSelector(state => state.notifications.unreadCount > 0);
 
-  // Données des produits (simulées) avec oldPrice
-  const products = [
-    { name: 'Tige de manioc', price: '3000 FCFA', oldPrice: '3500 FCFA', image: require('../assets/images/manioc.png'), description: 'Manioc frais cultivé localement.' },
-    { name: 'Cageot de tomates', price: '2500 FCFA', oldPrice: '3000 FCFA', image: require('../assets/images/tomate.png'), description: 'Tomates rouges et juteuses.' },
-    { name: 'Tige de manioc', price: '2500 FCFA', oldPrice: '3200 FCFA', image: require('../assets/images/manioc.png'), description: 'Manioc frais cultivé localement.' },
-    { name: 'Noix', price: '2700 FCFA', oldPrice: '3000 FCFA', image: require('../assets/images/noix.png'), description: 'Noix de qualité supérieure.' },
-    { name: 'Pommes', price: '2700 FCFA', oldPrice: '3200 FCFA', image: require('../assets/images/pomme.png'), description: 'Pommes croquantes et savoureuses.' },
-    { name: 'Patates', price: '1500 FCFA', oldPrice: '2000 FCFA', image: require('../assets/images/patate.png'), description: 'Patates douces et tendres.' },
-  ];
+  // États pour les produits
+  const [dailyOffers, setDailyOffers] = useState<Product[]>([]);
+  const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Chargement des données au montage du composant
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const [offers, recommended] = await Promise.all([
+        productService.getDailyOffers(),
+        productService.getRecommendedProducts(),
+      ]);
+      setDailyOffers(offers);
+      setRecommendedProducts(recommended);
+    } catch (error) {
+      console.error('Erreur lors du chargement des produits:', error);
+      // Ici, vous pourriez afficher un message d'erreur à l'utilisateur
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -70,52 +87,67 @@ const HomeScreen = () => {
           <Image source={require('../assets/images/lot_fruits.png')} />
         </View>
 
-        {/* Section "Offre du jour" */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Offre du jour</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-            {products.slice(0, 3).map((product, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.productCard}
-                onPress={() => navigation.navigate('DetailProduct', { product })}
-              >
-                <Image source={product.image} style={styles.productImage} />
-                <View style={styles.productInfo}>
-                  <Text style={styles.productName}>{product.name}</Text>
-                  <Text style={styles.productPrice}>{product.price}</Text>
-                  <Text style={styles.oldPrice}>{product.oldPrice}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Section "Recommandé pour vous" */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recommandé pour vous</Text>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {Array.from({ length: Math.ceil(products.length / 2) }, (_, i) => (
-              <View key={i} style={styles.recommendedRow}>
-                {products.slice(i * 2, i * 2 + 2).map((product, index) => (
+        {/* Loading indicator */}
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#F48C06" />
+          </View>
+        ) : (
+          <>
+            {/* Section "Offre du jour" */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Offre du jour</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+                {dailyOffers.map((product) => (
                   <TouchableOpacity
-                    key={index}
-                    style={styles.recommendedCard}
+                    key={product.id}
+                    style={styles.productCard}
                     onPress={() => navigation.navigate('DetailProduct', { product })}
                   >
-                    <Image source={product.image} style={styles.recommendedImage} />
-                    <View style={styles.recommendedInfo}>
-                      <Text style={styles.recommendedName}>{product.name}</Text>
-                      <Text style={styles.recommendedPrice}>{product.price}</Text>
-                      <Text style={styles.oldPrice}>{product.oldPrice}</Text>
-                      <Text style={styles.ordersText}>23 Commandes</Text>
+                    <Image source={product.image} style={styles.productImage} />
+                    <View style={styles.productInfo}>
+                      <Text style={styles.productName}>{product.name}</Text>
+                      <Text style={styles.productPrice}>{product.price}</Text>
+                      {product.oldPrice && (
+                        <Text style={styles.oldPrice}>{product.oldPrice}</Text>
+                      )}
                     </View>
                   </TouchableOpacity>
                 ))}
-              </View>
-            ))}
-          </ScrollView>
-        </View>
+              </ScrollView>
+            </View>
+
+            {/* Section "Recommandé pour vous" */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Recommandé pour vous</Text>
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {Array.from({ length: Math.ceil(recommendedProducts.length / 2) }, (_, i) => (
+                  <View key={i} style={styles.recommendedRow}>
+                    {recommendedProducts.slice(i * 2, i * 2 + 2).map((product) => (
+                      <TouchableOpacity
+                        key={product.id}
+                        style={styles.recommendedCard}
+                        onPress={() => navigation.navigate('DetailProduct', { product })}
+                      >
+                        <Image source={product.image} style={styles.recommendedImage} />
+                        <View style={styles.recommendedInfo}>
+                          <Text style={styles.recommendedName}>{product.name}</Text>
+                          <Text style={styles.recommendedPrice}>{product.price}</Text>
+                          {product.oldPrice && (
+                            <Text style={styles.oldPrice}>{product.oldPrice}</Text>
+                          )}
+                          <Text style={styles.ordersText}>
+                            {product.orderCount || 0} Commandes
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -165,6 +197,12 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
 
   // Hero Section
   heroSection: {
@@ -190,16 +228,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#fff',
     fontWeight: '500',
-  },
-  heroImageContainer: {
-    position: 'absolute',
-    right: -20,
-    top: 0,
-    bottom: 0,
-    width: 220,
-    zIndex: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   paginationContainer: {
     flexDirection: 'row',
@@ -269,9 +297,6 @@ const styles = StyleSheet.create({
   },
 
   // Recommandé pour vous - Grid
-  recommendedGrid: {
-    gap: 12,
-  },
   recommendedRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

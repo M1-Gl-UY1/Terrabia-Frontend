@@ -1,18 +1,43 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, CommonActions } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, MoreVertical, Star, Heart, Share2, ShoppingCart } from 'lucide-react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
+import { Product } from '../types/Product';
+import { useAppDispatch } from '../store/types';
+import { addToCart } from '../store/cartSlice';
 
 type DetailProductNavigationProp = NativeStackNavigationProp<RootStackParamList, 'DetailProduct'>;
 
 const DetailProductScreen = () => {
   const navigation = useNavigation<DetailProductNavigationProp>();
   const route = useRoute();
-  const { product } = route.params as { product: { name: string; price: string; image: any; description?: string } };
+  const dispatch = useAppDispatch();
+  const { product } = route.params as { product: Product };
   const [isFavorite, setIsFavorite] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+
+  const handleAddToCart = () => {
+    dispatch(addToCart({ product, quantity }));
+    Alert.alert(
+      'Produit ajouté',
+      `${quantity} x ${product.name} ajouté(s) au panier`,
+      [
+        { text: 'Continuer mes achats', style: 'cancel' },
+        { 
+          text: 'Voir le panier', 
+          onPress: () => navigation.navigate('MainTabs', { screen: 'Cart' })
+        }
+      ]
+    );
+  };
+
+  const handleBuyNow = () => {
+    dispatch(addToCart({ product, quantity }));
+    navigation.navigate('Checkout');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -25,8 +50,8 @@ const DetailProductScreen = () => {
           <Text style={styles.headerTitle}>Détails du produit</Text>
         </View>
         <TouchableOpacity style={styles.headerButton}>
-            <Share2 size={22} color="#000" />
-            <MoreVertical style={styles.MoreVert} size={24} color="#000" />
+          <Share2 size={22} color="#000" />
+          <MoreVertical style={styles.MoreVert} size={24} color="#000" />
         </TouchableOpacity>
       </View>
 
@@ -34,7 +59,7 @@ const DetailProductScreen = () => {
         {/* Image du produit avec overlay d'actions */}
         <View style={styles.imageContainer}>
           <Image 
-            source={require('../assets/images/tomate.png')} 
+            source={product.image} 
             style={styles.productImage} 
           />
           
@@ -62,88 +87,134 @@ const DetailProductScreen = () => {
 
         {/* Détails du produit */}
         <View style={styles.detailsContainer}>
-          <Text style={styles.productName}>Cageot De Tomates</Text>
-          <Text style={styles.productPrice}>3000 FCFA</Text>
+          <Text style={styles.productName}>{product.name}</Text>
+          <View style={styles.priceContainer}>
+            <Text style={styles.productPrice}>{product.price}</Text>
+            {product.oldPrice && (
+              <Text style={styles.oldPrice}>{product.oldPrice}</Text>
+            )}
+          </View>
+          
+          {/* Stock et commandes */}
+          {product.stock && (
+            <Text style={styles.stockText}>
+              {product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}
+            </Text>
+          )}
+          {product.orderCount && (
+            <Text style={styles.ordersText}>{product.orderCount} commandes</Text>
+          )}
           
           {/* Caractéristiques du produit */}
           <View style={styles.characteristicsSection}>
-            <Text style={styles.sectionTitle}>Caractéristiques Du Produits</Text>
+            <Text style={styles.sectionTitle}>Caractéristiques Du Produit</Text>
             
-            <View style={styles.characteristicRow}>
-              <Text style={styles.characteristicLabel}>Poids Approximatif :</Text>
-              <Text style={styles.characteristicValue}>3 Kg</Text>
-            </View>
+            {product.weight && (
+              <View style={styles.characteristicRow}>
+                <Text style={styles.characteristicLabel}>Poids Approximatif :</Text>
+                <Text style={styles.characteristicValue}>{product.weight}</Text>
+              </View>
+            )}
             
             <View style={styles.characteristicRow}>
               <Text style={styles.characteristicLabel}>Disponibilité :</Text>
-              <Text style={[styles.characteristicValue, styles.inStock]}>In Stock</Text>
+              <Text style={[styles.characteristicValue, styles.inStock]}>
+                {product.stock && product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+              </Text>
             </View>
             
-            <View style={styles.characteristicRow}>
-              <Text style={styles.characteristicLabel}>Qualité :</Text>
-              <Text style={styles.characteristicValue}>Agriculture Raisonnée Sans Pesticides De Synthèse</Text>
-            </View>
+            {product.quality && (
+              <View style={styles.characteristicRow}>
+                <Text style={styles.characteristicLabel}>Qualité :</Text>
+                <Text style={styles.characteristicValue}>{product.quality}</Text>
+              </View>
+            )}
           </View>
 
           {/* Détails du produit */}
-          <View style={styles.detailsSection}>
-            <Text style={styles.sectionTitle}>Détails Du Produit</Text>
-            <Text style={styles.detailsText}>
-              • Variété : Cœur De Bœuf Ancienne{'\n'}
-              • Couleur De Goûts : Riche Et Dense D'exception Goûtez-À Goûte Pour Préserver L'Eau{'\n'}
-              • Naturellement à Une Production Odbo
-            </Text>
-          </View>
+          {product.details && product.details.length > 0 && (
+            <View style={styles.detailsSection}>
+              <Text style={styles.sectionTitle}>Détails Du Produit</Text>
+              <Text style={styles.detailsText}>
+                {product.details.map((detail, index) => `• ${detail}`).join('\n')}
+              </Text>
+            </View>
+          )}
 
           {/* Description */}
           <View style={styles.descriptionSection}>
             <Text style={styles.sectionTitle}>Description</Text>
             <Text style={styles.descriptionText}>
-              Nous Avons Le Goût Authentique De Leïla Avec Nos Tomates. Cœur D'Artiste ! Cultivées En Plein Champ Sous Le Soleil Délicieux, Nos Tomates Sont Parfaites Pour Transformer Vos Plats En Délices. Elle Nous Offre Intense Pour Parfumer Une Saveur Incomparable.{'\n'}
-              
-              Voici Ce Que Nous Vous Recommandons En Général : La Bonne Nouvelle, C'est Qu'avec Ces Variétés, Les Saveurs Sont Subtiles Et Savoureuses, Des Spécialités Dans Nos Jardins.{'\n'}
-              
-              Les Goûts Naturels Et Variés Sont Un Super Atout Pour Simplement À Croquer Avec Une Pincée De Thé Des Tomates En Améliorer Ce Cageot, Vous Vous Offrez La Générosité Du Vitamines Et D'antioxydants Avec Agriculture Respectueuse Du (0) Du Km.
+              {product.description}
             </Text>
           </View>
 
           {/* Informations vendeur */}
-          <View style={styles.sellerSection}>
-            <Text style={styles.sellerTitle}>Vendu Par :</Text>
-            <Text style={styles.sellerName}>Ka Ferme De Sow</Text>
-            
-            <Text style={styles.productionTitle}>Production :</Text>
-            <Text style={styles.productionLocation}>Jean Et Sylvie Martin</Text>
-            
-            {/* Étoiles de notation */}
-            <View style={styles.ratingContainer}>
-              <Text style={styles.ratingText}>Note Du Vendeur :</Text>
-              <View style={styles.starsContainer}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={16}
-                    color="#FFD700"
-                    fill="#FFD700"
-                  />
-                ))}
+          {product.seller && (
+            <View style={styles.sellerSection}>
+              <Text style={styles.sellerTitle}>Vendu Par :</Text>
+              <Text style={styles.sellerName}>{product.seller.name}</Text>
+              
+              <Text style={styles.productionTitle}>Production :</Text>
+              <Text style={styles.productionLocation}>{product.seller.producer}</Text>
+              
+              {/* Étoiles de notation */}
+              <View style={styles.ratingContainer}>
+                <Text style={styles.ratingText}>Note Du Vendeur :</Text>
+                <View style={styles.starsContainer}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={16}
+                      color={star <= (product.seller?.rating || 0) ? "#FFD700" : "#D1D5DB"}
+                      fill={star <= (product.seller?.rating || 0) ? "#FFD700" : "transparent"}
+                    />
+                  ))}
+                </View>
               </View>
+            </View>
+          )}
+
+          {/* Sélection de quantité */}
+          <View style={styles.quantitySection}>
+            <Text style={styles.quantityLabel}>Quantité :</Text>
+            <View style={styles.quantityControls}>
+              <TouchableOpacity
+                style={styles.quantityButton}
+                onPress={() => setQuantity(Math.max(1, quantity - 1))}
+              >
+                <Text style={styles.quantityButtonText}>-</Text>
+              </TouchableOpacity>
+              <Text style={styles.quantityValue}>{quantity}</Text>
+              <TouchableOpacity
+                style={styles.quantityButton}
+                onPress={() => setQuantity(quantity + 1)}
+              >
+                <Text style={styles.quantityButtonText}>+</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
       </ScrollView>
+
       {/* Boutons d'action */}
-        <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.addToCartButton} onPress={() => Alert.alert('Ajouté au panier !')}>
-            <Text style={styles.addToCartText}>Ajouter au panier</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={styles.addToCartButton} 
+          onPress={handleAddToCart}
+        >
+          <Text style={styles.addToCartText}>Ajouter au panier</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buyNowButton} onPress={() => Alert.alert('Commander')}>
-            <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
-                <ShoppingCart size={22} color="#FFFF" />
-                <Text style={styles.buyNowText}>Commander</Text>
-            </View>
+        <TouchableOpacity 
+          style={styles.buyNowButton} 
+          onPress={handleBuyNow}
+        >
+          <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <ShoppingCart size={22} color="#FFFF" />
+            <Text style={styles.buyNowText}>Commander</Text>
+          </View>
         </TouchableOpacity>
-        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -225,11 +296,31 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     marginBottom: 8,
   },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 8,
+  },
   productPrice: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1F2937',
-    marginBottom: 24,
+    color: '#FF6B35',
+  },
+  oldPrice: {
+    fontSize: 16,
+    color: '#9CA3AF',
+    textDecorationLine: 'line-through',
+  },
+  stockText: {
+    fontSize: 14,
+    color: '#059669',
+    marginBottom: 4,
+  },
+  ordersText: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 16,
   },
   characteristicsSection: {
     marginBottom: 24,
@@ -277,7 +368,7 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   sellerSection: {
-    marginBottom: 32,
+    marginBottom: 24,
   },
   sellerTitle: {
     fontSize: 14,
@@ -315,21 +406,61 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 2,
   },
+  quantitySection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  quantityLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginRight: 16,
+  },
+  quantityControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  quantityButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityButtonText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+  },
+  quantityValue: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+    minWidth: 30,
+    textAlign: 'center',
+  },
   buttonContainer: {
     flexDirection: 'row',
     gap: 12,
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
   },
   addToCartButton: {
     flex: 1,
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: '#ffffffff',
+    borderColor: '#FF6B35',
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
   },
   addToCartText: {
-    color: '#000000ff',
+    color: '#FF6B35',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -337,6 +468,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FF6B35',
     paddingVertical: 16,
+    borderRadius: 8,
     alignItems: 'center',
   },
   buyNowText: {

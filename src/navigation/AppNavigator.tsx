@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home, LayoutGrid, ShoppingCart, User } from 'lucide-react-native';
+import { NavigatorScreenParams } from '@react-navigation/native';
 import OnboardingScreen from '../screens/Onboarding/OnboardingScreen';
 import OnboardingScreen2 from '../screens/Onboarding/OnboardingScreen2';
 import OnboardingScreen3 from '../screens/Onboarding/OnboardingScreen3';
@@ -11,35 +12,46 @@ import SearchScreen from '../screens/SearchScreen';
 import CategoriesScreen from '../screens/CategoriesScreen';
 import CartScreen from '../screens/CartScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import BottomTabBar from '../components/BottomTabBar';
 import NotifScreen from '../screens/NotifScreen';
 import DetailProductScreen from '../screens/DetailProductScreen';
-import CheckoutScreen from '../screens/CommandeScreen';
-
-export type RootStackParamList = {
-  Onboarding: undefined;
-  Onboarding2: undefined;
-  Onboarding3: undefined;
-  Onboarding4: undefined;
-  MainTabs: undefined;
-  Search: undefined;
-  Notifications: undefined;
-  DetailProduct: { product: { name: string; price: string; image: any; description?: string } };
-  Checkout: undefined;
-};
-
-export type OnboardingStackParamList = {
-  Onboarding: undefined;
-  Onboarding2: undefined;
-  Onboarding3: undefined;
-  Onboarding4: undefined;
-};
+import CheckoutScreen from '../screens/CheckoutScreen';
+import MobileMoneyPaymentScreen from '../screens/MobileMoneyPaymentScreen';
+import PaymentProcessingScreen from '../screens/PaymentProcessingScreen';
+import PaymentSuccessScreen from '../screens/PaymentSuccessScreen';
+import { Product } from '../types/Product';
+import { PaymentMethod } from '../types/Payment';
 
 export type MainTabParamList = {
   Home: undefined;
   Categories: undefined;
   Cart: undefined;
   Profile: undefined;
+};
+
+export type RootStackParamList = {
+  Onboarding: undefined;
+  Onboarding2: undefined;
+  Onboarding3: undefined;
+  Onboarding4: undefined;
+  MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
+  Search: undefined;
+  Notifications: undefined;
+  DetailProduct: { product: Product };
+  Checkout: undefined;
+  MobileMoneyPayment: { amount: number; paymentMethod: 'orange' | 'momo' };
+  CardPayment: { amount: number };
+  PaymentProcessing: { 
+    amount: number; 
+    paymentMethod: 'orange' | 'momo'; 
+    phoneNumber: string;
+  };
+  PaymentSuccess: {
+    amount: number;
+    paymentMethod: PaymentMethod;
+    phoneNumber?: string;
+    orderId: string;
+  };
+  OrderDetails: { orderId: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -114,6 +126,16 @@ export default function AppNavigator() {
       <Stack.Screen name="Notifications" component={NotifScreen} />
       <Stack.Screen name="DetailProduct" component={DetailProductScreen} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
+      <Stack.Screen name="MobileMoneyPayment" component={MobileMoneyPaymentScreen} />
+      <Stack.Screen name="PaymentProcessing" component={PaymentProcessingScreen} />
+      <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} />
     </Stack.Navigator>
   );
-}
+} '@react-navigation/native-stack';
+
+export type OnboardingStackParamList = {
+  Onboarding: undefined;
+  Onboarding2: undefined;
+  Onboarding3: undefined;
+  Onboarding4: undefined;
+};

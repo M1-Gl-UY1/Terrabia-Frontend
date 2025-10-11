@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,129 +7,190 @@ import {
   Pressable,
   Image,
   TextInput,
+  ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import TabNavigatorWrapper from '../components/TabNavigatorWrapper';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/AppNavigator';
+import { productService } from '../services/ProductService';
+import { Product } from '../types/Product';
+import { categories, recommendedSubcategories } from '../data/mockProducts';
 
-const categories = [
-  'Produits agricoles',
-  "Produits d'élevage",
-  'Produits halieutiques',
-  'Condiments et épices',
-  'Produits transformés',
-];
-
-const recommended = [
-  { name: 'légumes racines', image: require('../assets/images/patate.png') },
-  { name: 'fruits', image: require('../assets/images/pomme.png') },
-  { name: 'viandes', image: require('../assets/images/noix.png') },
-  { name: 'céréales', image: require('../assets/images/manioc.png') },
-  { name: 'oignons', image: require('../assets/images/patate.png') },
-  { name: 'carottes', image: require('../assets/images/patate.png') },
-];
-
-const products = [
-  {
-    name: 'Pommes',
-    price: '2700 FCFA',
-    image: require('../assets/images/pomme.png'),
-    orders: 25,
-    badge: 'A',
-    badgeColor: '#22C55E',
-    indicators: ['#22C55E', '#F59E0B', '#F97316'],
-  },
-  {
-    name: 'Manioc',
-    price: '3000 FCFA',
-    image: require('../assets/images/manioc.png'),
-    orders: 18,
-    badge: 'B',
-    badgeColor: '#F59E0B',
-    indicators: ['#F59E0B', '#F97316'],
-  },
-  // Ajoute d'autres produits ici...
-];
+type CategoriesNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function CategoriesScreen() {
+  const navigation = useNavigation<CategoriesNavigationProp>();
   const [showProducts, setShowProducts] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(categories[0].name);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  useEffect(() => {
+    filterProductsByCategory(selectedCategory);
+  }, [selectedCategory, products]);
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const allProducts = await productService.getAllProducts();
+      setProducts(allProducts);
+    } catch (error) {
+      console.error('Erreur lors du chargement des produits:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterProductsByCategory = (category: string) => {
+    const filtered = products.filter(p => p.category === category);
+    setFilteredProducts(filtered);
+  };
+
+  const handleCategoryPress = (categoryName: string) => {
+    setSelectedCategory(categoryName);
+  };
+
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+    if (query.trim() === '') {
+      filterProductsByCategory(selectedCategory);
+    } else {
+      try {
+        const results = await productService.searchProducts(query);
+        setFilteredProducts(results);
+      } catch (error) {
+        console.error('Erreur lors de la recherche:', error);
+      }
+    }
+  };
 
   return (
-    
-      <SafeAreaView style={styles.container}>
-        {/* Affiche la vue recherche si showProducts est true */}
-        {showProducts ? (
-          <>
-            <View style={styles.searchBarContainer}>
-              <TextInput
-                style={styles.searchBar}
-                placeholder="Que recherchez-vous aujourd'hui ?"
-                autoFocus
-                onBlur={() => setShowProducts(false)}
-              />
-              <Pressable style={styles.filterBtn}>
-                <Text style={{fontSize:18}}>Filtre</Text>
-              </Pressable>
-            </View>
-            <ScrollView>
+    <SafeAreaView style={styles.container}>
+      {/* Affiche la vue recherche si showProducts est true */}
+      {showProducts ? (
+        <>
+          <View style={styles.searchBarContainer}>
+            <TextInput
+              style={styles.searchBar}
+              placeholder="Que recherchez-vous aujourd'hui ?"
+              autoFocus
+              value={searchQuery}
+              onChangeText={handleSearch}
+              onBlur={() => {
+                if (searchQuery.trim() === '') {
+                  setShowProducts(false);
+                }
+              }}
+            />
+            <Pressable style={styles.filterBtn}>
+              <Text style={{fontSize:18}}>Filtre</Text>
+            </Pressable>
+          </View>
+          <ScrollView>
+            {loading ? (
+              <ActivityIndicator size="large" color="#F48C06" style={{marginTop: 20}} />
+            ) : (
               <View style={styles.productsList}>
-                {products.map((p, i) => (
-                  <View key={i} style={styles.productCardV2}>
+                {filteredProducts.map((p) => (
+                  <TouchableOpacity
+                    key={p.id}
+                    style={styles.productCardV2}
+                    onPress={() => navigation.navigate('DetailProduct', { product: p })}
+                  >
                     <Image source={p.image} style={styles.productImgV2} />
                     <View style={styles.productInfoV2}>
                       <View style={{flex:1}}>
                         <Text style={styles.productNameV2}>{p.name}</Text>
                         <Text style={styles.productPriceV2}>{p.price}</Text>
-                        <Text style={styles.productOrdersV2}>{p.orders} Commandes</Text>
+                        <Text style={styles.productOrdersV2}>{p.orderCount} Commandes</Text>
                       </View>
-                      <View style={styles.productBadgesV2}>
-                        <View style={[styles.badgeV2, {backgroundColor: p.badgeColor}]}> 
-                          <Text style={{color:'#fff', fontWeight:'bold'}}>{p.badge}</Text>
+                      {p.badge && p.badgeColor && (
+                        <View style={styles.productBadgesV2}>
+                          <View style={[styles.badgeV2, {backgroundColor: p.badgeColor}]}> 
+                            <Text style={{color:'#fff', fontWeight:'bold'}}>{p.badge}</Text>
+                          </View>
+                          {p.qualityIndicators && (
+                            <View style={styles.indicatorsV2}>
+                              {p.qualityIndicators.map((color, idx) => (
+                                <View key={idx} style={[styles.indicatorDotV2, {backgroundColor: color}]} />
+                              ))}
+                            </View>
+                          )}
                         </View>
-                        <View style={styles.indicatorsV2}>
-                          {p.indicators.map((color, idx) => (
-                            <View key={idx} style={[styles.indicatorDotV2, {backgroundColor: color}]} />
-                          ))}
-                        </View>
-                      </View>
+                      )}
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 ))}
+                {filteredProducts.length === 0 && (
+                  <Text style={styles.noResultsText}>Aucun produit trouvé</Text>
+                )}
               </View>
-      </ScrollView>
-          </>
-        ) : (
-          <>
-            <View style={styles.searchBarContainer}>
-              <TextInput
-                style={styles.searchBar}
-                placeholder="Que recherchez-vous aujourd'hui ?"
-                onFocus={() => setShowProducts(true)}
-              />
+            )}
+          </ScrollView>
+        </>
+      ) : (
+        <>
+          <View style={styles.searchBarContainer}>
+            <TextInput
+              style={styles.searchBar}
+              placeholder="Que recherchez-vous aujourd'hui ?"
+              onFocus={() => setShowProducts(true)}
+            />
+          </View>
+          <View style={styles.row}>
+            <View style={styles.sideMenu}>
+              {categories.map((cat) => (
+                <Pressable
+                  key={cat.id}
+                  style={[
+                    styles.sideMenuItem,
+                    selectedCategory === cat.name && styles.selectedMenuItem
+                  ]}
+                  onPress={() => handleCategoryPress(cat.name)}
+                >
+                  <Text style={[
+                    styles.sideMenuText,
+                    selectedCategory === cat.name && styles.selectedMenuText
+                  ]}>
+                    {cat.name}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
-            <View style={styles.row}>
-              <View style={styles.sideMenu}>
-                {categories.map((cat, i) => (
-                  <Pressable key={i} style={styles.sideMenuItem}>
-                    <Text style={styles.sideMenuText}>{cat}</Text>
-                  </Pressable>
-                ))}
-              </View>
-              <View style={styles.recommendedContainer}>
-                <Text style={styles.recommendedTitle}>Recommander</Text>
+            <View style={styles.recommendedContainer}>
+              <Text style={styles.recommendedTitle}>Recommandé</Text>
+              {loading ? (
+                <ActivityIndicator size="small" color="#F48C06" />
+              ) : (
                 <View style={styles.recommendedGrid}>
-                  {recommended.map((item, i) => (
-                    <View key={i} style={styles.recommendedCard}>
+                  {recommendedSubcategories.map((item) => (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={styles.recommendedCard}
+                      onPress={() => {
+                        setShowProducts(true);
+                        handleSearch(item.name);
+                      }}
+                    >
                       <Image source={item.image} style={styles.recommendedImg} />
                       <Text style={styles.recommendedName}>{item.name}</Text>
-                    </View>
+                    </TouchableOpacity>
                   ))}
                 </View>
-              </View>
+              )}
             </View>
-          </>
-        )}
-      </SafeAreaView>
-  
+          </View>
+        </>
+      )}
+    </SafeAreaView>
   );
 }
 
@@ -173,9 +234,18 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 8,
   },
+  selectedMenuItem: {
+    backgroundColor: '#FFFFFF',
+    borderLeftWidth: 3,
+    borderLeftColor: '#FF6B35',
+  },
   sideMenuText: {
     fontSize: 13,
     color: '#222',
+  },
+  selectedMenuText: {
+    fontWeight: '600',
+    color: '#FF6B35',
   },
   recommendedContainer: {
     flex: 1,
@@ -209,43 +279,6 @@ const styles = StyleSheet.create({
   productsList: {
     padding: 8,
   },
-  productRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginBottom: 10,
-    padding: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  productImg: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-  },
-  productName: {
-    fontWeight: '600',
-    fontSize: 15,
-  },
-  productPrice: {
-    color: '#F27A22',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  addBtn: {
-    backgroundColor: '#F27A22',
-    borderRadius: 16,
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 8,
-  },
-  // --- V2 styles for product card with attributes ---
   productCardV2: {
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -305,5 +338,11 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 2,
     marginRight: 2,
+  },
+  noResultsText: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#888',
+    marginTop: 20,
   },
 });
