@@ -8,11 +8,21 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Package,
+  Headphones,
+  MessageSquare,
+  PackageOpen,
+  Heart,
+  Clock,
+  ChevronRight,
+  Edit2,
+} from 'lucide-react-native';
 
 type MenuItem = {
   id: string;
   title: string;
-  icon: string;
+  icon?: any;
   action: () => void;
 };
 
@@ -27,25 +37,25 @@ export default function ProfileScreen() {
     {
       id: '1',
       title: 'Commandes',
-      icon: '🎯',
+      icon: Package,
       action: () => console.log('Commandes'),
     },
     {
       id: '2',
       title: 'Service Client',
-      icon: '🎧',
+      icon: Headphones,
       action: () => console.log('Service Client'),
     },
     {
       id: '3',
       title: 'En Attente De Commentaire',
-      icon: '💬',
+      icon: MessageSquare,
       action: () => console.log('Commentaire'),
     },
     {
       id: '4',
       title: 'Retour Et Remboursement',
-      icon: '📦',
+      icon: PackageOpen,
       action: () => console.log('Retour'),
     },
   ];
@@ -54,13 +64,13 @@ export default function ProfileScreen() {
     {
       id: '1',
       title: 'Liste de souhaits',
-      icon: '🤍',
+      icon: Heart,
       action: () => console.log('Liste de souhaits'),
     },
     {
       id: '2',
       title: 'Consulter récemments',
-      icon: '📋',
+      icon: Clock,
       action: () => console.log('Récemments'),
     },
   ];
@@ -69,101 +79,109 @@ export default function ProfileScreen() {
     {
       id: '1',
       title: 'Langues',
-      icon: '',
       action: () => console.log('Langues'),
     },
     {
       id: '2',
       title: 'Reinitialiser Mot De Passe',
-      icon: '',
       action: () => console.log('Mot de passe'),
     },
     {
       id: '3',
       title: 'Guide Utilisateur',
-      icon: '',
       action: () => console.log('Guide'),
     },
     {
       id: '4',
       title: 'Politique De Retour',
-      icon: '',
       action: () => console.log('Politique'),
     },
     {
       id: '5',
       title: 'A Propos De KOM-B',
-      icon: '',
       action: () => console.log('A Propos'),
     },
     {
       id: '6',
       title: 'Devenir Vendeur',
-      icon: '',
       action: () => console.log('Vendeur'),
     },
     {
       id: '7',
       title: 'Suprimer Mon Compte',
-      icon: '',
       action: () => console.log('Supprimer'),
     },
   ];
 
-  const renderQuickAction = (item: any) => (
-    <Pressable key={item.id} style={styles.quickActionItem} onPress={item.action}>
-      <Text style={styles.quickActionIcon}>{item.icon}</Text>
-      <Text style={styles.quickActionTitle}>{item.title}</Text>
-    </Pressable>
-  );
+  const renderQuickAction = (item: any) => {
+    const IconComponent = item.icon;
+    return (
+      <Pressable key={item.id} style={styles.quickActionItem} onPress={item.action}>
+        <View style={styles.quickActionIconContainer}>
+          <IconComponent size={24} color="#F27A22" strokeWidth={2} />
+        </View>
+        <Text style={styles.quickActionTitle}>{item.title}</Text>
+      </Pressable>
+    );
+  };
 
-  const renderMenuItem = (item: MenuItem) => (
-    <Pressable key={item.id} style={styles.menuItem} onPress={item.action}>
-      <View style={styles.menuItemLeft}>
-        {item.icon && <Text style={styles.menuIcon}>{item.icon}</Text>}
-        <Text style={styles.menuTitle}>{item.title}</Text>
-      </View>
-    </Pressable>
-  );
+  const renderMenuItem = (item: MenuItem) => {
+    const IconComponent = item.icon;
+    return (
+      <Pressable key={item.id} style={styles.menuItem} onPress={item.action}>
+        <View style={styles.menuItemLeft}>
+          {IconComponent && (
+            <View style={styles.menuIconContainer}>
+              <IconComponent size={20} color="#374151" strokeWidth={2} />
+            </View>
+          )}
+          <Text style={styles.menuTitle}>{item.title}</Text>
+        </View>
+        <ChevronRight size={20} color="#9CA3AF" strokeWidth={2} />
+      </Pressable>
+    );
+  };
 
   return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {/* En-tête avec fond orange */}
-          <View style={styles.orangeHeader}>
-            {/* Profil utilisateur */}
-            <View style={styles.profileCard}>
-              <Image source={ user.avatar } style={styles.avatar} />
-              <View style={styles.profileInfo}>
-                <Text style={styles.userName}>{user.name}</Text>
-                <Text style={styles.userPhone}>{user.phone}</Text>
-              </View>
-              <Text style={styles.editIcon}>✏️</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* En-tête avec fond orange */}
+        <View style={styles.orangeHeader}>
+          {/* Profil utilisateur */}
+          <View style={styles.profileCard}>
+            <Image source={user.avatar} style={styles.avatar} />
+            <View style={styles.profileInfo}>
+              <Text style={styles.userName}>{user.name}</Text>
+              <Text style={styles.userPhone}>{user.phone}</Text>
             </View>
+            <Pressable onPress={() => console.log('Edit profile')}>
+              <Edit2 size={20} color="#6B7280" strokeWidth={2} />
+            </Pressable>
           </View>
+        </View>
 
-          {/* Section Ma Commande */}
-          <View style={styles.commandSection}>
-            <Text style={styles.commandTitle}>Ma Commande</Text>
-            <View style={styles.quickActionsGrid}>
-              {quickActions.map(renderQuickAction)}
-            </View>
+        {/* Section Ma Commande */}
+        <View style={styles.commandSection}>
+          <Text style={styles.commandTitle}>Ma Commande</Text>
+          <View style={styles.quickActionsGrid}>
+            {quickActions.map(renderQuickAction)}
           </View>
+        </View>
 
-          {/* Menu avec cœur et liste */}
-          <View style={styles.menuSection}>
-            {menuItems.map(renderMenuItem)}
-          </View>
+        {/* Menu avec cœur et liste */}
+        <View style={styles.menuSection}>
+          {menuItems.map(renderMenuItem)}
+        </View>
 
-          {/* Section Paramètres */}
-          <View style={styles.settingsSection}>
-            <Text style={styles.sectionTitle}>Paramètres</Text>
-            <View style={styles.settingsContainer}>
-              {settingsItems.map(renderMenuItem)}
-            </View>
+        {/* Section Paramètres */}
+        <View style={styles.settingsSection}>
+          <Text style={styles.sectionTitle}>Paramètres</Text>
+          <View style={styles.settingsContainer}>
+            {settingsItems.map(renderMenuItem)}
           </View>
-        </ScrollView>
-      </SafeAreaView>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -173,7 +191,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   orangeHeader: {
-    backgroundColor: '#FF7722',
+    backgroundColor: '#F27A22',
     paddingHorizontal: 16,
     paddingTop: 20,
     paddingBottom: 40,
@@ -210,10 +228,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
   },
-  editIcon: {
-    fontSize: 20,
-    color: '#6B7280',
-  },
   commandSection: {
     backgroundColor: '#FFFFFF',
     marginTop: -20,
@@ -237,8 +251,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
   },
-  quickActionIcon: {
-    fontSize: 24,
+  quickActionIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#FFF7ED',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 8,
   },
   quickActionTitle: {
@@ -255,6 +274,7 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
@@ -264,10 +284,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  menuIcon: {
-    fontSize: 20,
+  menuIconContainer: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 12,
-    width: 24,
   },
   menuTitle: {
     fontSize: 16,
@@ -278,6 +300,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     marginTop: 8,
     paddingTop: 20,
+    paddingBottom: 20,
   },
   sectionTitle: {
     fontSize: 18,

@@ -18,8 +18,13 @@ import CheckoutScreen from '../screens/CheckoutScreen';
 import MobileMoneyPaymentScreen from '../screens/MobileMoneyPaymentScreen';
 import PaymentProcessingScreen from '../screens/PaymentProcessingScreen';
 import PaymentSuccessScreen from '../screens/PaymentSuccessScreen';
+import OnboardingInitialScreen from '../screens/Onboarding/OnboardingInitialScreen';
 import { Product } from '../types/Product';
 import { PaymentMethod } from '../types/Payment';
+import LoginScreen from '../screens/Registration/LoginScreen';
+import SignUpScreen from '../screens/Registration/SignUpScreen';
+import OTPVerificationScreen from '../screens/Registration/OTPVerificationScreen';
+import VerificationSuccessScreen from '../screens/Registration/VerificationSuccessScreen';
 
 export type MainTabParamList = {
   Home: undefined;
@@ -29,10 +34,15 @@ export type MainTabParamList = {
 };
 
 export type RootStackParamList = {
+  OnboardingInitialScreen: undefined;
   Onboarding: undefined;
   Onboarding2: undefined;
   Onboarding3: undefined;
   Onboarding4: undefined;
+  Login: undefined;
+  SignUp: undefined;
+  OTPVerification: undefined;
+  VerificationSuccess: undefined;
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
   Search: undefined;
   Notifications: undefined;
@@ -117,10 +127,15 @@ function MainTabNavigator() {
 export default function AppNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="OnboardingInitialScreen" component={OnboardingInitialScreen} />
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="Onboarding2" component={OnboardingScreen2} />
       <Stack.Screen name="Onboarding3" component={OnboardingScreen3} />
       <Stack.Screen name="Onboarding4" component={OnboardingScreen4} />
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="OTPVerification" component={OTPVerificationScreen} />
+      <Stack.Screen name="VerificationSuccess" component={VerificationSuccessScreen} />
       <Stack.Screen name="MainTabs" component={MainTabNavigator} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Notifications" component={NotifScreen} />
