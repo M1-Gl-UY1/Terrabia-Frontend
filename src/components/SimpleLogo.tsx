@@ -26,11 +26,10 @@ export default function SimpleLogo({
         </View>
       </View>
       
-      {/* Texte KOM-B */}
+      {/* Texte Terrabia */}
       {showText && (
         <Text style={[styles.logoText, { fontSize: size * 0.2 }]}>
-          <Text style={styles.komText}>KOM-</Text>
-          <Text style={styles.bText}>B</Text>
+          <Text style={styles.terrabiaText}>Terrabia</Text>
         </Text>
       )}
     </View>
@@ -89,11 +88,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textAlign: 'center',
   },
-  komText: {
+  terrabiaText: {
     color: '#F27A22',
-  },
-  bText: {
-    color: '#6B7280',
   },
 });
 

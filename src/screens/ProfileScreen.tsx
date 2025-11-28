@@ -98,7 +98,7 @@ export default function ProfileScreen() {
     },
     {
       id: '5',
-      title: 'A Propos De KOM-B',
+      title: 'A Propos De Terrabia',
       action: () => console.log('A Propos'),
     },
     {

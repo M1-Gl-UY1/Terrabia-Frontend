@@ -42,7 +42,7 @@ const OnboardingScreen = () => {
             <View style={styles.titleContainer}>
               <Text style={styles.welcomeText}>BIENVENU SUR</Text>
               <View style={styles.logoContainer}>
-                <Text style={styles.komBText}>KOM-B!</Text>
+                <Text style={styles.terrabiaText}>Terrabia!</Text>
                 <Image source={require('../../assets/images/logo_sans_fond.png')} style={styles.logo} />
               </View>
             </View>
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     marginTop: 1,
     
   },
-  komBText: {
+  terrabiaText: {
     fontSize: 40,
     fontWeight: 'bold',
     color: '#F48C06',

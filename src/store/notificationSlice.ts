@@ -18,28 +18,28 @@ const initialState: NotificationState = {
     {
       id: '1',
       titre: 'COMMANDE 89D29 ( Livraison Terminer )',
-      message: 'Bonne nouvelle ! Votre colis a bien été livré à l\'adresse indiquée. Si vous ne l\'avez pas encore récupéré, nous vous invitons à vérifier auprès de votre entourage ou du point de livraison. N\'hésitez pas à nous contacter si vous rencontrez un problème avec la réception du colis ou si le contenu ne correspond pas à ce que vous avez commandé.\n\nMerci d\'avoir passé commande sur Kom-b et à très bientôt !',
+      message: 'Bonne nouvelle ! Votre colis a bien été livré à l\'adresse indiquée. Si vous ne l\'avez pas encore récupéré, nous vous invitons à vérifier auprès de votre entourage ou du point de livraison. N\'hésitez pas à nous contacter si vous rencontrez un problème avec la réception du colis ou si le contenu ne correspond pas à ce que vous avez commandé.\n\nMerci d\'avoir passé commande sur Terrabia et à très bientôt !',
       date: 'il y a 1j',
       read: false
     },
     {
       id: '2',
       titre: 'COMMANDE 89D29 ( Livraison Terminer )',
-      message: 'Bonne nouvelle ! Votre colis a bien été livré à l\'adresse indiquée. Si vous ne l\'avez pas encore récupéré, nous vous invitons à vérifier auprès de votre entourage ou du point de livraison. N\'hésitez pas à nous contacter si vous rencontrez un problème avec la réception du colis ou si le contenu ne correspond pas à ce que vous avez commandé.\n\nMerci d\'avoir passé commande sur Kom-b et à très bientôt !',
+      message: 'Bonne nouvelle ! Votre colis a bien été livré à l\'adresse indiquée. Si vous ne l\'avez pas encore récupéré, nous vous invitons à vérifier auprès de votre entourage ou du point de livraison. N\'hésitez pas à nous contacter si vous rencontrez un problème avec la réception du colis ou si le contenu ne correspond pas à ce que vous avez commandé.\n\nMerci d\'avoir passé commande sur Terrabia et à très bientôt !',
       date: 'il y a 1j',
       read: false
     },
     {
       id: '3',
       titre: 'COMMANDE 89D29 ( Livraison Terminer )',
-      message: 'Bonne nouvelle ! Votre colis a bien été livré à l\'adresse indiquée. Si vous ne l\'avez pas encore récupéré, nous vous invitons à vérifier auprès de votre entourage ou du point de livraison. N\'hésitez pas à nous contacter si vous rencontrez un problème avec la réception du colis ou si le contenu ne correspond pas à ce que vous avez commandé.\n\nMerci d\'avoir passé commande sur Kom-b et à très bientôt !',
+      message: 'Bonne nouvelle ! Votre colis a bien été livré à l\'adresse indiquée. Si vous ne l\'avez pas encore récupéré, nous vous invitons à vérifier auprès de votre entourage ou du point de livraison. N\'hésitez pas à nous contacter si vous rencontrez un problème avec la réception du colis ou si le contenu ne correspond pas à ce que vous avez commandé.\n\nMerci d\'avoir passé commande sur Terrabia et à très bientôt !',
       date: 'il y a 1j',
       read: false
     },
     {
       id: '4',
       titre: 'COMMANDE 89D29 ( Livraison Terminer )',
-      message: 'Bonne nouvelle ! Votre colis a bien été livré à l\'adresse indiquée. Si vous ne l\'avez pas encore récupéré, nous vous invitons à vérifier auprès de votre entourage ou du point de livraison. N\'hésitez pas à nous contacter si vous rencontrez un problème avec la réception du colis ou si le contenu ne correspond pas à ce que vous avez commandé.\n\nMerci d\'avoir passé commande sur Kom-b et à très bientôt !',
+      message: 'Bonne nouvelle ! Votre colis a bien été livré à l\'adresse indiquée. Si vous ne l\'avez pas encore récupéré, nous vous invitons à vérifier auprès de votre entourage ou du point de livraison. N\'hésitez pas à nous contacter si vous rencontrez un problème avec la réception du colis ou si le contenu ne correspond pas à ce que vous avez commandé.\n\nMerci d\'avoir passé commande sur Terrabia et à très bientôt !',
       date: 'il y a 1j',
       read: false
     },

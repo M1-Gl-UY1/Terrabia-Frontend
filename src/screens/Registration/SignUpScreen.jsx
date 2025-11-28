@@ -53,7 +53,7 @@ export default function SignUpScreen({ navigation }) {
             
             <View style={styles.titleContainer}>
               <Text style={styles.title}>Bienvenue chez</Text>
-              <Text style={styles.titleHighlight}><Text style={styles.brandName}>KOM-B</Text></Text>
+              <Text style={styles.titleHighlight}><Text style={styles.brandName}>Terrabia</Text></Text>
             </View>
           </View>
 

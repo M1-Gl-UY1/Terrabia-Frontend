@@ -55,7 +55,7 @@ const OnboardingScreen2 = () => {
             <Text style={styles.titleText}>Soutenez</Text>
             <Text style={styles.titleText}>l'agriculture locale</Text>
             <Text style={styles.descriptionText}>
-              Chaque Achat Sur Kom-B Aide À Réduire Les Pertes Après Récolte Et Garantit Une Juste Rémunération Pour Les Producteurs. Ensemble, Luttons Contre Le Gaspillage Alimentaire !
+              Chaque Achat Sur Terrabia Aide À Réduire Les Pertes Après Récolte Et Garantit Une Juste Rémunération Pour Les Producteurs. Ensemble, Luttons Contre Le Gaspillage Alimentaire !
             </Text>
           </View>
 

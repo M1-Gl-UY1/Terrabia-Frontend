@@ -1,4 +1,4 @@
-# KOM-B - Application Mobile React Native
+# Terrabia - Application Mobile React Native
 
 Une application mobile pour commander des produits frais directement auprès des producteurs locaux.
 
@@ -114,7 +114,7 @@ L'application utilise React Navigation avec :
 ## 📸 Captures d'écran
 
 L'application comprend :
-1. **Écran de bienvenue** avec logo KOM-B
+1. **Écran de bienvenue** avec logo Terrabia
 2. **Slide de commande** avec icône de boîte
 3. **Slide d'agriculture locale** avec graphique
 4. **Slide final** avec checkmark
