@@ -6,8 +6,11 @@ import {
   ScrollView,
   Pressable,
   Image,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   Package,
   Headphones,
@@ -17,7 +20,13 @@ import {
   Clock,
   ChevronRight,
   Edit2,
+  LogOut,
 } from 'lucide-react-native';
+import { useAppDispatch, useAppSelector } from '../store/types';
+import { logout, selectUser } from '../store/authSlice';
+import { RootStackParamList } from '../navigation/AppNavigator';
+
+type ProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type MenuItem = {
   id: string;
@@ -27,10 +36,31 @@ type MenuItem = {
 };
 
 export default function ProfileScreen() {
+  const navigation = useNavigation<ProfileScreenNavigationProp>();
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector(selectUser);
+
   const user = {
-    name: 'Gisele Tiafo',
-    phone: '620 356 221',
+    name: currentUser ? `${currentUser.prenom} ${currentUser.nom}` : 'Utilisateur',
+    phone: currentUser?.numTel || 'Non renseigné',
     avatar: require('../assets/profil_gisele.png'),
+  };
+
+  const handleLogout = () => {
+    Alert.alert('Déconnexion', 'Êtes-vous sûr de vouloir vous déconnecter ?', [
+      {
+        text: 'Annuler',
+        style: 'cancel',
+      },
+      {
+        text: 'Se déconnecter',
+        style: 'destructive',
+        onPress: () => {
+          dispatch(logout());
+          navigation.replace('OnboardingInitialScreen');
+        },
+      },
+    ]);
   };
 
   const quickActions = [
@@ -110,6 +140,12 @@ export default function ProfileScreen() {
       id: '7',
       title: 'Suprimer Mon Compte',
       action: () => console.log('Supprimer'),
+    },
+    {
+      id: '8',
+      title: 'Se déconnecter',
+      icon: LogOut,
+      action: handleLogout,
     },
   ];
 

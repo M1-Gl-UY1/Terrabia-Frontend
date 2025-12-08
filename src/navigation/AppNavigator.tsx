@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home, LayoutGrid, ShoppingCart, User } from 'lucide-react-native';
 import { NavigatorScreenParams } from '@react-navigation/native';
+import SplashScreen from '../screens/SplashScreen';
 import OnboardingScreen from '../screens/Onboarding/OnboardingScreen';
 import OnboardingScreen2 from '../screens/Onboarding/OnboardingScreen2';
 import OnboardingScreen3 from '../screens/Onboarding/OnboardingScreen3';
@@ -23,8 +24,6 @@ import { Product } from '../types/Product';
 import { PaymentMethod } from '../types/Payment';
 import LoginScreen from '../screens/Registration/LoginScreen';
 import SignUpScreen from '../screens/Registration/SignUpScreen';
-import OTPVerificationScreen from '../screens/Registration/OTPVerificationScreen';
-import VerificationSuccessScreen from '../screens/Registration/VerificationSuccessScreen';
 
 export type MainTabParamList = {
   Home: undefined;
@@ -34,6 +33,7 @@ export type MainTabParamList = {
 };
 
 export type RootStackParamList = {
+  Splash: undefined;
   OnboardingInitialScreen: undefined;
   Onboarding: undefined;
   Onboarding2: undefined;
@@ -41,8 +41,6 @@ export type RootStackParamList = {
   Onboarding4: undefined;
   Login: undefined;
   SignUp: undefined;
-  OTPVerification: undefined;
-  VerificationSuccess: undefined;
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
   Search: undefined;
   Notifications: undefined;
@@ -50,9 +48,9 @@ export type RootStackParamList = {
   Checkout: undefined;
   MobileMoneyPayment: { amount: number; paymentMethod: 'orange' | 'momo' };
   CardPayment: { amount: number };
-  PaymentProcessing: { 
-    amount: number; 
-    paymentMethod: 'orange' | 'momo'; 
+  PaymentProcessing: {
+    amount: number;
+    paymentMethod: 'orange' | 'momo';
     phoneNumber: string;
   };
   PaymentSuccess: {
@@ -126,16 +124,25 @@ function MainTabNavigator() {
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="Splash"
+    >
+      {/* Écran de démarrage avec vérification de l'authentification */}
+      <Stack.Screen name="Splash" component={SplashScreen} />
+
+      {/* Écrans d'onboarding */}
       <Stack.Screen name="OnboardingInitialScreen" component={OnboardingInitialScreen} />
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="Onboarding2" component={OnboardingScreen2} />
       <Stack.Screen name="Onboarding3" component={OnboardingScreen3} />
       <Stack.Screen name="Onboarding4" component={OnboardingScreen4} />
+
+      {/* Écrans d'authentification */}
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
-      <Stack.Screen name="OTPVerification" component={OTPVerificationScreen} />
-      <Stack.Screen name="VerificationSuccess" component={VerificationSuccessScreen} />
+
+      {/* Application principale */}
       <Stack.Screen name="MainTabs" component={MainTabNavigator} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Notifications" component={NotifScreen} />
