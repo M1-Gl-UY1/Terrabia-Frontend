@@ -306,6 +306,92 @@ class ApiClient {
   async patch<T = any>(url: string, data?: any, requiresAuth: boolean = true): Promise<ApiResponse<T>> {
     return this.request<T>({ method: 'PATCH', url, data, requiresAuth });
   }
+
+  /**
+   * Effectue une requête multipart/form-data pour upload de fichiers
+   */
+  async uploadMultipart<T = any>(
+    url: string,
+    formData: FormData,
+    requiresAuth: boolean = true,
+  ): Promise<ApiResponse<T>> {
+    const fullURL = url.startsWith('http') ? url : `${this.baseURL}${url}`;
+
+    try {
+      // Préparer les headers sans Content-Type (FormData le gère automatiquement)
+      const headers: Record<string, string> = {};
+
+      if (requiresAuth) {
+        const token = await this.getToken();
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+
+      logger.info('📤 Upload multipart', { url: fullURL });
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
+
+      const response = await fetch(fullURL, {
+        method: 'POST',
+        headers,
+        body: formData,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      const contentType = response.headers.get('content-type');
+      const textContent = await response.text();
+
+      let responseData: any;
+      if (contentType && contentType.includes('application/json') && textContent) {
+        try {
+          responseData = JSON.parse(textContent);
+        } catch {
+          responseData = textContent;
+        }
+      } else {
+        responseData = textContent || null;
+      }
+
+      if (response.ok) {
+        logger.success('✅ Upload réussi', { status: response.status });
+        return {
+          success: true,
+          data: responseData,
+          status: response.status,
+        };
+      } else {
+        const errorMessage = typeof responseData === 'string'
+          ? responseData.trim()
+          : responseData?.message || responseData?.error || 'Erreur lors de l\'upload';
+
+        logger.error('❌ Échec upload', { status: response.status, error: errorMessage });
+        return {
+          success: false,
+          error: errorMessage,
+          status: response.status,
+        };
+      }
+    } catch (error: any) {
+      let errorMessage: string;
+      if (error.name === 'AbortError') {
+        errorMessage = 'L\'upload a pris trop de temps. Veuillez réessayer.';
+      } else if (error.message?.includes('Network request failed')) {
+        errorMessage = 'Erreur de connexion. Vérifiez votre connexion internet.';
+      } else {
+        errorMessage = error.message || 'Erreur réseau';
+      }
+
+      logger.error('❌ Erreur upload', error);
+      return {
+        success: false,
+        error: errorMessage,
+      };
+    }
+  }
 }
 
 // Instance singleton du client API

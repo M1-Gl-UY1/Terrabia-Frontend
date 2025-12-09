@@ -10,7 +10,6 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { ArrowLeft } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -18,14 +17,15 @@ import { RootStackParamList } from '../../navigation/AppNavigator';
 import { useAppDispatch } from '../../store/types';
 import { setUser } from '../../store/authSlice';
 import authService from '../../services/AuthService';
-import { Role } from '../../types/Backend';
 import Toast from '../../components/Toast';
 import { useToast } from '../../hooks/useToast';
+import { Tractor, ArrowLeft } from 'lucide-react-native';
+import { Role } from '../../types/Backend';
 
-type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
+type ProducerLoginNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ProducerLogin'>;
 
-const LoginScreen = () => {
-  const navigation = useNavigation<LoginScreenNavigationProp>();
+const ProducerLoginScreen = () => {
+  const navigation = useNavigation<ProducerLoginNavigationProp>();
   const dispatch = useAppDispatch();
   const { toast, showSuccess, showError, hideToast } = useToast();
 
@@ -69,9 +69,9 @@ const LoginScreen = () => {
       const response = await authService.login(credentials);
 
       if (response.success && response.data) {
-        // Vérifier que c'est bien un acheteur
-        if (response.data.role === Role.VENDEUR) {
-          showError('Ce compte est un compte producteur. Utilisez l\'espace producteur pour vous connecter.', 4000);
+        // Vérifier que c'est bien un producteur
+        if (response.data.role !== Role.VENDEUR) {
+          showError('Ce compte n\'est pas un compte producteur. Veuillez utiliser l\'espace acheteur.', 4000);
           return;
         }
 
@@ -93,9 +93,9 @@ const LoginScreen = () => {
 
         showSuccess(`Bienvenue ${response.data.nom} !`, 2000);
 
-        // Rediriger vers MainTabs après 1.5 secondes
+        // Rediriger vers le dashboard producteur
         setTimeout(() => {
-          navigation.replace('MainTabs');
+          navigation.replace('ProducerTabs');
         }, 1500);
       } else {
         const errorMessage = response.error || 'Email ou mot de passe incorrect';
@@ -109,7 +109,7 @@ const LoginScreen = () => {
   };
 
   const handleGoToSignUp = () => {
-    navigation.navigate('UserTypeSelection');
+    navigation.navigate('ProducerSignUp');
   };
 
   const handleGoBack = () => {
@@ -125,9 +125,13 @@ const LoginScreen = () => {
             <ArrowLeft size={24} color="#333" />
           </TouchableOpacity>
 
+          {/* Header avec icône producteur */}
           <View style={styles.header}>
-            <Text style={styles.title}>Connexion</Text>
-            <Text style={styles.subtitle}>Connectez-vous pour accéder à votre compte</Text>
+            <View style={styles.iconContainer}>
+              <Tractor size={40} color="#2E7D32" strokeWidth={1.5} />
+            </View>
+            <Text style={styles.title}>Espace Producteur</Text>
+            <Text style={styles.subtitle}>Connectez-vous pour gérer vos produits</Text>
           </View>
 
           <View style={styles.form}>
@@ -135,7 +139,7 @@ const LoginScreen = () => {
               <Text style={styles.label}>Adresse email</Text>
               <TextInput
                 style={[styles.input, errors.email && styles.inputError]}
-                placeholder="Exemple: jean.dupont@email.com"
+                placeholder="Exemple: producteur@email.com"
                 placeholderTextColor="#999"
                 value={email}
                 onChangeText={text => {
@@ -154,7 +158,7 @@ const LoginScreen = () => {
               <Text style={styles.label}>Mot de passe</Text>
               <TextInput
                 style={[styles.input, errors.password && styles.inputError]}
-                placeholder="Entrez votre mot de passe (min. 6 caractères)"
+                placeholder="Entrez votre mot de passe"
                 placeholderTextColor="#999"
                 value={password}
                 onChangeText={text => {
@@ -184,14 +188,13 @@ const LoginScreen = () => {
             <View style={styles.signupLinkContainer}>
               <Text style={styles.signupLinkText}>Vous n'avez pas de compte ?</Text>
               <TouchableOpacity onPress={handleGoToSignUp} disabled={isLoading}>
-                <Text style={styles.signupLink}>S'inscrire</Text>
+                <Text style={styles.signupLink}>Créer un compte</Text>
               </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* Toast de notification */}
       <Toast
         visible={toast.visible}
         message={toast.message}
@@ -224,17 +227,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   header: {
+    alignItems: 'center',
     marginBottom: 40,
   },
+  iconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#E8F5E9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#F48C06',
+    color: '#2E7D32',
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
     color: '#666',
+    textAlign: 'center',
   },
   form: {
     flex: 1,
@@ -267,7 +281,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   loginButton: {
-    backgroundColor: '#F48C06',
+    backgroundColor: '#2E7D32',
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
@@ -292,11 +306,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   signupLink: {
-    color: '#F48C06',
+    color: '#2E7D32',
     fontSize: 15,
     fontWeight: 'bold',
     marginLeft: 5,
   },
 });
 
-export default LoginScreen;
+export default ProducerLoginScreen;

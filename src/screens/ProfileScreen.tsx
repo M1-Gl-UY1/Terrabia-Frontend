@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  Pressable,
+  TouchableOpacity,
   Image,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   Package,
@@ -21,10 +22,20 @@ import {
   ChevronRight,
   Edit2,
   LogOut,
+  Settings,
+  Bell,
+  HelpCircle,
+  FileText,
+  Shield,
+  Trash2,
+  Globe,
+  User,
 } from 'lucide-react-native';
 import { useAppDispatch, useAppSelector } from '../store/types';
 import { logout, selectUser } from '../store/authSlice';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { orderService } from '../services/OrderService';
+import { Commande, StatutCommande } from '../types/Backend';
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -32,7 +43,10 @@ type MenuItem = {
   id: string;
   title: string;
   icon?: any;
+  iconColor?: string;
   action: () => void;
+  showBadge?: boolean;
+  badgeCount?: number;
 };
 
 export default function ProfileScreen() {
@@ -40,10 +54,50 @@ export default function ProfileScreen() {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(selectUser);
 
+  const [refreshing, setRefreshing] = useState(false);
+  const [orderCounts, setOrderCounts] = useState({
+    pending: 0,
+    paid: 0,
+    delivered: 0,
+    total: 0,
+  });
+
   const user = {
-    name: currentUser ? `${currentUser.prenom} ${currentUser.nom}` : 'Utilisateur',
+    name: currentUser ? `${currentUser.prenom || ''} ${currentUser.nom}`.trim() : 'Utilisateur',
+    email: currentUser?.email || 'Non renseigné',
     phone: currentUser?.numTel || 'Non renseigné',
-    avatar: require('../assets/profil_gisele.png'),
+    city: currentUser?.ville || 'Non renseignée',
+  };
+
+  const loadOrderCounts = async () => {
+    if (currentUser?.idUser) {
+      try {
+        const response = await orderService.getOrderHistory(currentUser.idUser);
+        if (response.success && response.data) {
+          const orders = response.data;
+          setOrderCounts({
+            pending: orders.filter(o => o.statut === StatutCommande.EN_ATTENTE).length,
+            paid: orders.filter(o => o.statut === StatutCommande.PAYEE).length,
+            delivered: orders.filter(o => o.statut === StatutCommande.LIVREE).length,
+            total: orders.length,
+          });
+        }
+      } catch (error) {
+        console.error('Erreur chargement commandes:', error);
+      }
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadOrderCounts();
+    }, [currentUser?.idUser])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadOrderCounts();
+    setRefreshing(false);
   };
 
   const handleLogout = () => {
@@ -63,88 +117,144 @@ export default function ProfileScreen() {
     ]);
   };
 
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Supprimer le compte',
+      'Cette action est irréversible. Toutes vos données seront supprimées.',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer',
+          style: 'destructive',
+          onPress: () => {
+            // API call to delete account
+            Alert.alert('Info', 'Cette fonctionnalité sera bientôt disponible');
+          },
+        },
+      ]
+    );
+  };
+
   const quickActions = [
     {
       id: '1',
-      title: 'Commandes',
+      title: 'Toutes',
       icon: Package,
-      action: () => console.log('Commandes'),
+      count: orderCounts.total,
+      action: () => navigation.navigate('OrderHistory'),
     },
     {
       id: '2',
-      title: 'Service Client',
-      icon: Headphones,
-      action: () => console.log('Service Client'),
+      title: 'En attente',
+      icon: Clock,
+      count: orderCounts.pending,
+      action: () => navigation.navigate('OrderHistory'),
     },
     {
       id: '3',
-      title: 'En Attente De Commentaire',
+      title: 'Payées',
       icon: MessageSquare,
-      action: () => console.log('Commentaire'),
+      count: orderCounts.paid,
+      action: () => navigation.navigate('OrderHistory'),
     },
     {
       id: '4',
-      title: 'Retour Et Remboursement',
+      title: 'Livrées',
       icon: PackageOpen,
-      action: () => console.log('Retour'),
+      count: orderCounts.delivered,
+      action: () => navigation.navigate('OrderHistory'),
     },
   ];
 
   const menuItems: MenuItem[] = [
     {
       id: '1',
-      title: 'Liste de souhaits',
-      icon: Heart,
-      action: () => console.log('Liste de souhaits'),
+      title: 'Mes commandes',
+      icon: Package,
+      iconColor: '#F48C06',
+      action: () => navigation.navigate('OrderHistory'),
     },
     {
       id: '2',
-      title: 'Consulter récemments',
+      title: 'Notifications',
+      icon: Bell,
+      iconColor: '#3B82F6',
+      action: () => navigation.navigate('Notifications'),
+    },
+    {
+      id: '3',
+      title: 'Liste de souhaits',
+      icon: Heart,
+      iconColor: '#EF4444',
+      action: () => Alert.alert('Info', 'Fonctionnalité bientôt disponible'),
+    },
+    {
+      id: '4',
+      title: 'Vus récemment',
       icon: Clock,
-      action: () => console.log('Récemments'),
+      iconColor: '#8B5CF6',
+      action: () => Alert.alert('Info', 'Fonctionnalité bientôt disponible'),
     },
   ];
 
   const settingsItems: MenuItem[] = [
     {
       id: '1',
-      title: 'Langues',
-      action: () => console.log('Langues'),
+      title: 'Modifier le profil',
+      icon: User,
+      iconColor: '#6B7280',
+      action: () => Alert.alert('Info', 'Fonctionnalité bientôt disponible'),
     },
     {
       id: '2',
-      title: 'Reinitialiser Mot De Passe',
-      action: () => console.log('Mot de passe'),
+      title: 'Langue',
+      icon: Globe,
+      iconColor: '#6B7280',
+      action: () => Alert.alert('Info', 'Fonctionnalité bientôt disponible'),
     },
     {
       id: '3',
-      title: 'Guide Utilisateur',
-      action: () => console.log('Guide'),
+      title: 'Aide et support',
+      icon: HelpCircle,
+      iconColor: '#6B7280',
+      action: () => Alert.alert('Info', 'Fonctionnalité bientôt disponible'),
     },
     {
       id: '4',
-      title: 'Politique De Retour',
-      action: () => console.log('Politique'),
+      title: 'Conditions d\'utilisation',
+      icon: FileText,
+      iconColor: '#6B7280',
+      action: () => Alert.alert('Info', 'Fonctionnalité bientôt disponible'),
     },
     {
       id: '5',
-      title: 'A Propos De Terrabia',
-      action: () => console.log('A Propos'),
+      title: 'Politique de confidentialité',
+      icon: Shield,
+      iconColor: '#6B7280',
+      action: () => Alert.alert('Info', 'Fonctionnalité bientôt disponible'),
     },
     {
       id: '6',
-      title: 'Devenir Vendeur',
-      action: () => console.log('Vendeur'),
+      title: 'À propos de Terrabia',
+      icon: HelpCircle,
+      iconColor: '#6B7280',
+      action: () => Alert.alert('Info', 'Version 1.0.0'),
+    },
+  ];
+
+  const dangerItems: MenuItem[] = [
+    {
+      id: '1',
+      title: 'Supprimer mon compte',
+      icon: Trash2,
+      iconColor: '#EF4444',
+      action: handleDeleteAccount,
     },
     {
-      id: '7',
-      title: 'Suprimer Mon Compte',
-      action: () => console.log('Supprimer'),
-    },
-    {
-      id: '8',
+      id: '2',
       title: 'Se déconnecter',
       icon: LogOut,
+      iconColor: '#EF4444',
       action: handleLogout,
     },
   ];
@@ -152,70 +262,108 @@ export default function ProfileScreen() {
   const renderQuickAction = (item: any) => {
     const IconComponent = item.icon;
     return (
-      <Pressable key={item.id} style={styles.quickActionItem} onPress={item.action}>
+      <TouchableOpacity key={item.id} style={styles.quickActionItem} onPress={item.action}>
         <View style={styles.quickActionIconContainer}>
-          <IconComponent size={24} color="#F27A22" strokeWidth={2} />
+          <IconComponent size={22} color="#F48C06" strokeWidth={2} />
         </View>
+        <Text style={styles.quickActionCount}>{item.count}</Text>
         <Text style={styles.quickActionTitle}>{item.title}</Text>
-      </Pressable>
+      </TouchableOpacity>
     );
   };
 
-  const renderMenuItem = (item: MenuItem) => {
+  const renderMenuItem = (item: MenuItem, showBorder: boolean = true) => {
     const IconComponent = item.icon;
     return (
-      <Pressable key={item.id} style={styles.menuItem} onPress={item.action}>
+      <TouchableOpacity
+        key={item.id}
+        style={[styles.menuItem, !showBorder && styles.menuItemNoBorder]}
+        onPress={item.action}
+      >
         <View style={styles.menuItemLeft}>
           {IconComponent && (
-            <View style={styles.menuIconContainer}>
-              <IconComponent size={20} color="#374151" strokeWidth={2} />
+            <View style={[styles.menuIconContainer, { backgroundColor: `${item.iconColor}15` }]}>
+              <IconComponent size={18} color={item.iconColor} strokeWidth={2} />
             </View>
           )}
-          <Text style={styles.menuTitle}>{item.title}</Text>
+          <Text style={[styles.menuTitle, item.iconColor === '#EF4444' && styles.dangerText]}>
+            {item.title}
+          </Text>
         </View>
-        <ChevronRight size={20} color="#9CA3AF" strokeWidth={2} />
-      </Pressable>
+        <ChevronRight size={18} color="#9CA3AF" strokeWidth={2} />
+      </TouchableOpacity>
     );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#F48C06']}
+            tintColor="#F48C06"
+          />
+        }
+      >
         {/* En-tête avec fond orange */}
         <View style={styles.orangeHeader}>
+          <Text style={styles.headerTitle}>Mon Profil</Text>
+
           {/* Profil utilisateur */}
           <View style={styles.profileCard}>
-            <Image source={user.avatar} style={styles.avatar} />
+            <View style={styles.avatarContainer}>
+              <Text style={styles.avatarText}>
+                {user.name.charAt(0).toUpperCase()}
+              </Text>
+            </View>
             <View style={styles.profileInfo}>
               <Text style={styles.userName}>{user.name}</Text>
-              <Text style={styles.userPhone}>{user.phone}</Text>
+              <Text style={styles.userEmail}>{user.email}</Text>
+              <Text style={styles.userCity}>{user.city}</Text>
             </View>
-            <Pressable onPress={() => console.log('Edit profile')}>
-              <Edit2 size={20} color="#6B7280" strokeWidth={2} />
-            </Pressable>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => Alert.alert('Info', 'Modification du profil bientôt disponible')}
+            >
+              <Edit2 size={18} color="#F48C06" strokeWidth={2} />
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* Section Ma Commande */}
+        {/* Section Mes Commandes */}
         <View style={styles.commandSection}>
-          <Text style={styles.commandTitle}>Ma Commande</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Mes Commandes</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('OrderHistory')}>
+              <Text style={styles.seeAllText}>Voir tout</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.quickActionsGrid}>
             {quickActions.map(renderQuickAction)}
           </View>
         </View>
 
-        {/* Menu avec cœur et liste */}
+        {/* Menu principal */}
         <View style={styles.menuSection}>
-          {menuItems.map(renderMenuItem)}
+          {menuItems.map((item, index) => renderMenuItem(item, index < menuItems.length - 1))}
         </View>
 
-        {/* Section Paramètres */}
-        <View style={styles.settingsSection}>
-          <Text style={styles.sectionTitle}>Paramètres</Text>
-          <View style={styles.settingsContainer}>
-            {settingsItems.map(renderMenuItem)}
-          </View>
+        {/* Paramètres */}
+        <View style={styles.menuSection}>
+          <Text style={styles.menuSectionTitle}>Paramètres</Text>
+          {settingsItems.map((item, index) => renderMenuItem(item, index < settingsItems.length - 1))}
         </View>
+
+        {/* Actions dangereuses */}
+        <View style={[styles.menuSection, styles.dangerSection]}>
+          {dangerItems.map((item, index) => renderMenuItem(item, index < dangerItems.length - 1))}
+        </View>
+
+        {/* Version */}
+        <Text style={styles.versionText}>Terrabia v1.0.0</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -227,93 +375,152 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   orangeHeader: {
-    backgroundColor: '#F27A22',
+    backgroundColor: '#F48C06',
     paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 40,
+    paddingTop: 16,
+    paddingBottom: 50,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 20,
   },
   profileCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 20,
-    elevation: 2,
+    elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
   },
-  avatar: {
+  avatarContainer: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    marginRight: 16,
+    backgroundColor: '#FFF7ED',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  avatarText: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#F48C06',
   },
   profileInfo: {
     flex: 1,
   },
   userName: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#1F2937',
-    marginBottom: 4,
+    marginBottom: 2,
   },
-  userPhone: {
-    fontSize: 14,
+  userEmail: {
+    fontSize: 13,
     color: '#6B7280',
+    marginBottom: 2,
   },
-  commandSection: {
-    backgroundColor: '#FFFFFF',
-    marginTop: -20,
-    paddingTop: 30,
-    paddingHorizontal: 16,
-    paddingBottom: 20,
+  userCity: {
+    fontSize: 13,
+    color: '#9CA3AF',
   },
-  commandTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 20,
-  },
-  quickActionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  quickActionItem: {
-    width: '22%',
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  quickActionIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  editButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#FFF7ED',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+  },
+  commandSection: {
+    backgroundColor: '#FFFFFF',
+    marginTop: -30,
+    marginHorizontal: 16,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1F2937',
+  },
+  seeAllText: {
+    fontSize: 14,
+    color: '#F48C06',
+    fontWeight: '600',
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  quickActionItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  quickActionIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#FFF7ED',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  quickActionCount: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 2,
   },
   quickActionTitle: {
     fontSize: 11,
-    color: '#374151',
+    color: '#6B7280',
     textAlign: 'center',
-    lineHeight: 14,
   },
   menuSection: {
     backgroundColor: '#FFFFFF',
-    marginTop: 8,
+    marginHorizontal: 16,
+    borderRadius: 16,
     paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  menuSectionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    paddingTop: 16,
+    paddingBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
+  },
+  menuItemNoBorder: {
+    borderBottomWidth: 0,
   },
   menuItemLeft: {
     flexDirection: 'row',
@@ -321,31 +528,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuIconContainer: {
-    width: 32,
-    height: 32,
+    width: 34,
+    height: 34,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   menuTitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#374151',
-    fontWeight: '400',
+    fontWeight: '500',
   },
-  settingsSection: {
-    backgroundColor: '#FFFFFF',
-    marginTop: 8,
-    paddingTop: 20,
-    paddingBottom: 20,
+  dangerText: {
+    color: '#EF4444',
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginHorizontal: 16,
-    marginBottom: 16,
+  dangerSection: {
+    marginBottom: 20,
   },
-  settingsContainer: {
-    paddingHorizontal: 16,
+  versionText: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    paddingBottom: 30,
   },
 });

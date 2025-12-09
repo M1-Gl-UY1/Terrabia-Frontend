@@ -6,6 +6,7 @@ export interface Product {
   priceNumeric: number; // Prix en nombre pour les calculs
   oldPrice?: string;
   image: any; // Pour les images locales avec require()
+  imageUrl?: string; // URL de l'image du backend
   description: string;
   orderCount?: number;
   category: string;

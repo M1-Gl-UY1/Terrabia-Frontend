@@ -48,7 +48,7 @@ const OnboardingScreen = () => {
             </View>
             
             <Text style={styles.descriptionText}>
-              Accédez Directement Aux Récoltes De Nos Producteurs Locaux. Mangez Des Produits Frais, De Saison, Et De Qualité, Livrés Près De Chez Vous.
+              Une plateforme pour les acheteurs et les producteurs. Achetez des produits frais ou vendez vos récoltes directement aux consommateurs.
             </Text>
           </View>
 

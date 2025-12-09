@@ -140,7 +140,7 @@ const Toast: React.FC<ToastProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 50,
+    top: 16,
     left: 16,
     right: 16,
     borderRadius: 12,

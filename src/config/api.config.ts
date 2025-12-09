@@ -57,6 +57,19 @@ export const API_CONFIG = {
     PAIEMENT: {
       PAYER: '/api/paiement/payer',
     },
+
+    // Producteur/Vendeur
+    VENDEUR: {
+      GET_PRODUCTS: (idVendeur: number) => `/api/produits/vendeur/${idVendeur}`,
+      GET_ORDERS: (idVendeur: number) => `/api/commandes/vendeur/${idVendeur}`,
+      GET_STATS: (idVendeur: number) => `/api/vendeur/${idVendeur}/stats`,
+      UPDATE_PROFILE: (idVendeur: number) => `/api/vendeur/${idVendeur}`,
+    },
+
+    // Catégories
+    CATEGORIES: {
+      GET_ALL: '/api/categories',
+    },
   },
 
   // Headers par défaut

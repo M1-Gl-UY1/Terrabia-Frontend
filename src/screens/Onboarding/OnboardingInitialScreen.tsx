@@ -17,11 +17,11 @@ const OnboardingInitialScreen = () => {
   const navigation = useNavigation<OnboardingInitialNavigationProp>();
 
   const handleSignUp = () => {
-    navigation.navigate('SignUp');
+    navigation.navigate('UserTypeSelection');
   };
 
   const handleLogin = () => {
-    navigation.navigate('Login');
+    navigation.navigate('UserTypeSelection');
   };
 
   const handleSkip = () => {
@@ -52,8 +52,7 @@ const OnboardingInitialScreen = () => {
             </View>
 
             <Text style={styles.descriptionText}>
-              Connectez-vous directement aux producteurs locaux. Mangez frais, de saison, et de qualité, livré près
-              de chez vous.
+              Acheteurs, découvrez des produits frais des producteurs locaux. Producteurs, vendez directement aux consommateurs.
             </Text>
 
             <View style={styles.buttonContainer}>

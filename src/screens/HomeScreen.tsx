@@ -1,33 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Pressable,
+  ActivityIndicator,
+  RefreshControl,
+  Dimensions,
+} from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
-import { Search, Bell } from 'lucide-react-native';
-import { useAppSelector } from '../store/types';
+import { Search, Bell, ShoppingCart } from 'lucide-react-native';
+import { useAppSelector, useAppDispatch } from '../store/types';
+import { loadCart, selectCartItemCount } from '../store/cartSlice';
 import { productService } from '../services/ProductService';
 import { Product } from '../types/Product';
 
 type HomeNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainTabs'>;
 
+const { width } = Dimensions.get('window');
+const CARD_WIDTH = (width - 48) / 2;
+
 const HomeScreen = () => {
   const navigation = useNavigation<HomeNavigationProp>();
+  const dispatch = useAppDispatch();
   const hasUnreadNotifications = useAppSelector(state => state.notifications.unreadCount > 0);
+  const cartItemCount = useAppSelector(selectCartItemCount);
+  const user = useAppSelector(state => state.auth.user);
 
-  // États pour les produits
   const [dailyOffers, setDailyOffers] = useState<Product[]>([]);
   const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Chargement des données au montage du composant
-  useEffect(() => {
-    loadProducts();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadProducts();
+      // Charger le panier si l'utilisateur est connecté
+      if (user?.idUser) {
+        dispatch(loadCart(user.idUser));
+      }
+    }, [user?.idUser])
+  );
 
   const loadProducts = async () => {
     try {
-      setLoading(true);
+      if (!refreshing) setLoading(true);
       const [offers, recommended] = await Promise.all([
         productService.getDailyOffers(),
         productService.getRecommendedProducts(),
@@ -36,115 +59,156 @@ const HomeScreen = () => {
       setRecommendedProducts(recommended);
     } catch (error) {
       console.error('Erreur lors du chargement des produits:', error);
-      // Ici, vous pourriez afficher un message d'erreur à l'utilisateur
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadProducts();
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
+  };
+
+  const getImageSource = (product: Product) => {
+    if (product.imageUrl && typeof product.imageUrl === 'string') {
+      return { uri: product.imageUrl };
+    }
+    if (product.image) {
+      return product.image;
+    }
+    return require('../assets/images/logo_sans_fond.png');
+  };
+
+  const ProductCard = ({ product, style }: { product: Product; style?: any }) => (
+    <TouchableOpacity
+      style={[styles.productCard, style]}
+      onPress={() => navigation.navigate('DetailProduct', { product })}
+      activeOpacity={0.8}
+    >
+      <Image source={getImageSource(product)} style={styles.productImage} resizeMode="cover" />
+      <View style={styles.productInfo}>
+        <Text style={styles.productName} numberOfLines={2}>
+          {product.name}
+        </Text>
+        <Text style={styles.productPrice}>{formatPrice(product.priceNumeric)}</Text>
+        {product.oldPrice && <Text style={styles.oldPrice}>{product.oldPrice}</Text>}
+        {product.orderCount !== undefined && product.orderCount > 0 && (
+          <Text style={styles.ordersText}>{product.orderCount} Commandes</Text>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#F48C06']}
+            tintColor="#F48C06"
+          />
+        }
       >
         {/* Header */}
         <View style={styles.header}>
-          {/* Barre de recherche */}
-          <Pressable
-            style={styles.searchContainer}
-            onPress={() => navigation.navigate('Search')}
-          >
+          <Pressable style={styles.searchContainer} onPress={() => navigation.navigate('Search')}>
             <Search size={20} color="#9CA3AF" />
-            <Text style={styles.searchPlaceholder}>
-              Que recherchez-vous aujourd'hui ?
-            </Text>
+            <Text style={styles.searchPlaceholder}>Que recherchez-vous aujourd'hui ?</Text>
           </Pressable>
-          <TouchableOpacity
-            style={styles.notificationButton}
-            onPress={() => navigation.navigate('Notifications')}
-          >
-            <View style={{ position: 'relative' }}>
-              <Bell size={24} color="#9CA3AF" />
+          <View style={styles.headerActions}>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => navigation.navigate('Notifications')}
+            >
+              <Bell size={22} color="#333" />
               {hasUnreadNotifications && <View style={styles.badge} />}
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => navigation.navigate('MainTabs', { screen: 'Cart' })}
+            >
+              <ShoppingCart size={22} color="#333" />
+              {cartItemCount > 0 && (
+                <View style={styles.cartBadge}>
+                  <Text style={styles.cartBadgeText}>
+                    {cartItemCount > 9 ? '9+' : cartItemCount}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Hero Section avec l'image de fruits */}
+        {/* Hero Section */}
         <View style={styles.heroSection}>
           <View style={styles.heroTextContainer}>
-            <Text style={styles.heroTitle}>De la plantation à{'\n'}votre table, en toute{'\n'}simplicité</Text>
-            <Text style={styles.heroSubtitle}>Commandez maintenant {'>>'}</Text>
-
-            {/* Indicateurs de pagination */}
+            <Text style={styles.heroTitle}>
+              De la plantation à{'\n'}votre table, en toute{'\n'}simplicité
+            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('MainTabs', { screen: 'Categories' })}>
+              <Text style={styles.heroSubtitle}>Commandez maintenant {'>>'}</Text>
+            </TouchableOpacity>
             <View style={styles.paginationContainer}>
               <View style={[styles.paginationDot, styles.activeDot]} />
               <View style={styles.paginationDot} />
               <View style={styles.paginationDot} />
             </View>
           </View>
-          <Image source={require('../assets/images/lot_fruits.png')} />
+          <Image
+            source={require('../assets/images/lot_fruits.png')}
+            style={styles.heroImage}
+            resizeMode="contain"
+          />
         </View>
 
-        {/* Loading indicator */}
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#F48C06" />
+            <Text style={styles.loadingText}>Chargement des produits...</Text>
           </View>
         ) : (
           <>
-            {/* Section "Offre du jour" */}
+            {/* Section Offre du jour */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Offre du jour</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-                {dailyOffers.map((product) => (
-                  <TouchableOpacity
-                    key={product.id}
-                    style={styles.productCard}
-                    onPress={() => navigation.navigate('DetailProduct', { product })}
-                  >
-                    <Image source={product.image} style={styles.productImage} />
-                    <View style={styles.productInfo}>
-                      <Text style={styles.productName}>{product.name}</Text>
-                      <Text style={styles.productPrice}>{product.price}</Text>
-                      {product.oldPrice && (
-                        <Text style={styles.oldPrice}>{product.oldPrice}</Text>
-                      )}
-                    </View>
-                  </TouchableOpacity>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Offre du jour</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('MainTabs', { screen: 'Categories' })}>
+                  <Text style={styles.seeAllText}>Voir tout</Text>
+                </TouchableOpacity>
+              </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalScroll}
+              >
+                {dailyOffers.map(product => (
+                  <ProductCard key={product.id} product={product} style={styles.offerCard} />
                 ))}
               </ScrollView>
             </View>
 
-            {/* Section "Recommandé pour vous" */}
+            {/* Section Recommandé pour vous */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Recommandé pour vous</Text>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {Array.from({ length: Math.ceil(recommendedProducts.length / 2) }, (_, i) => (
-                  <View key={i} style={styles.recommendedRow}>
-                    {recommendedProducts.slice(i * 2, i * 2 + 2).map((product) => (
-                      <TouchableOpacity
-                        key={product.id}
-                        style={styles.recommendedCard}
-                        onPress={() => navigation.navigate('DetailProduct', { product })}
-                      >
-                        <Image source={product.image} style={styles.recommendedImage} />
-                        <View style={styles.recommendedInfo}>
-                          <Text style={styles.recommendedName}>{product.name}</Text>
-                          <Text style={styles.recommendedPrice}>{product.price}</Text>
-                          {product.oldPrice && (
-                            <Text style={styles.oldPrice}>{product.oldPrice}</Text>
-                          )}
-                          <Text style={styles.ordersText}>
-                            {product.orderCount || 0} Commandes
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Recommandé pour vous</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('MainTabs', { screen: 'Categories' })}>
+                  <Text style={styles.seeAllText}>Voir tout</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.productsGrid}>
+                {recommendedProducts.map(product => (
+                  <ProductCard key={product.id} product={product} style={styles.gridCard} />
                 ))}
-              </ScrollView>
+              </View>
             </View>
           </>
         )}
@@ -156,8 +220,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
-    paddingBottom: -24,
+    backgroundColor: '#F5F5F5',
   },
   scrollContent: {
     paddingBottom: 20,
@@ -173,7 +236,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F3F4',
+    backgroundColor: '#F5F5F5',
     borderRadius: 25,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -185,101 +248,160 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     marginLeft: 10,
   },
-  notificationButton: {
-    padding: 8,
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   badge: {
     position: 'absolute',
-    right: -2,
-    top: -2,
+    right: 10,
+    top: 10,
     backgroundColor: '#FF6B35',
     borderRadius: 6,
-    width: 12,
-    height: 12,
+    width: 10,
+    height: 10,
+  },
+  cartBadge: {
+    position: 'absolute',
+    right: 6,
+    top: 6,
+    backgroundColor: '#F48C06',
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  cartBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: 60,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#666',
   },
 
   // Hero Section
   heroSection: {
-    height: 220,
-    position: 'relative',
+    height: 200,
     flexDirection: 'row',
-    overflow: 'hidden',
     backgroundColor: '#FFCB69',
+    overflow: 'hidden',
   },
   heroTextContainer: {
     flex: 1,
-    paddingTop: 32,
-    paddingStart: 24,
+    paddingTop: 28,
+    paddingStart: 20,
+    paddingBottom: 20,
   },
   heroTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
     color: '#fff',
-    lineHeight: 26,
+    lineHeight: 24,
     marginBottom: 8,
   },
   heroSubtitle: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#fff',
-    fontWeight: '500',
+    fontWeight: '600',
+  },
+  heroImage: {
+    width: 160,
+    height: 200,
   },
   paginationContainer: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
     alignSelf: 'flex-start',
-    marginTop: 24,
+    marginTop: 20,
   },
   paginationDot: {
-    width: 10,
-    height: 10,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: '#FFFFFF',
     opacity: 0.5,
   },
   activeDot: {
+    width: 20,
     backgroundColor: '#2D3748',
     opacity: 1,
   },
 
   // Sections
   section: {
-    paddingHorizontal: 16,
     marginTop: 24,
+    paddingHorizontal: 16,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: '#2D3748',
-    marginBottom: 16,
+  },
+  seeAllText: {
+    fontSize: 14,
+    color: '#F48C06',
+    fontWeight: '600',
   },
 
-  // Offre du jour - Horizontal scroll
+  // Horizontal scroll (Offre du jour)
   horizontalScroll: {
-    marginHorizontal: -16,
-    paddingHorizontal: 16,
+    paddingRight: 16,
   },
+  offerCard: {
+    width: 160,
+    marginRight: 12,
+  },
+
+  // Products Grid
+  productsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  gridCard: {
+    width: CARD_WIDTH,
+  },
+
+  // Product Card
   productCard: {
-    width: 150,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    marginRight: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 3,
     overflow: 'hidden',
-    marginBottom: 4,
   },
   productImage: {
     width: '100%',
-    height: 100,
-    resizeMode: 'cover',
+    height: 120,
+    backgroundColor: '#F5F5F5',
   },
   productInfo: {
     padding: 12,
@@ -288,62 +410,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#2D3748',
-    marginBottom: 4,
+    marginBottom: 6,
+    lineHeight: 18,
   },
   productPrice: {
     fontSize: 16,
     fontWeight: '700',
     color: '#F48C06',
   },
-
-  // Recommandé pour vous - Grid
-  recommendedRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-    gap: 12,
-  },
-  recommendedCard: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    overflow: 'hidden',
-  },
-  recommendedImage: {
-    width: '100%',
-    height: 120,
-    resizeMode: 'cover',
-  },
-  recommendedInfo: {
-    padding: 12,
-  },
-  recommendedName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#2D3748',
-    marginBottom: 4,
-  },
-  recommendedPrice: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#2D3748',
-    marginBottom: 2,
-  },
   oldPrice: {
     fontSize: 12,
     color: '#9CA3AF',
     textDecorationLine: 'line-through',
-    fontWeight: '400',
+    marginTop: 2,
   },
   ordersText: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#6B7280',
-    marginTop: 2,
+    marginTop: 4,
   },
 });
 

@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useAppDispatch } from '../store/types';
 import { checkAuthStatus } from '../store/authSlice';
+import { Role } from '../types/Backend';
 import logger from '../utils/logger';
 
 type SplashScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -28,12 +29,23 @@ const SplashScreen = () => {
       // Vérifier si l'utilisateur est connecté
       const result = await dispatch(checkAuthStatus()).unwrap();
 
-      if (result.token) {
-        // Utilisateur connecté, rediriger vers l'application principale
-        logger.success('✅ Utilisateur connecté, redirection vers MainTabs');
-        setTimeout(() => {
-          navigation.replace('MainTabs');
-        }, 1500);
+      if (result.token && result.user) {
+        // Utilisateur connecté, vérifier son rôle
+        const userRole = result.user.role;
+
+        if (userRole === Role.VENDEUR) {
+          // Producteur connecté, rediriger vers le dashboard producteur
+          logger.success('✅ Producteur connecté, redirection vers ProducerTabs');
+          setTimeout(() => {
+            navigation.replace('ProducerTabs');
+          }, 1500);
+        } else {
+          // Acheteur connecté, rediriger vers l'application principale
+          logger.success('✅ Acheteur connecté, redirection vers MainTabs');
+          setTimeout(() => {
+            navigation.replace('MainTabs');
+          }, 1500);
+        }
       } else {
         // Utilisateur non connecté, rediriger vers l'onboarding
         logger.info('ℹ️ Utilisateur non connecté, redirection vers Onboarding');
@@ -55,7 +67,7 @@ const SplashScreen = () => {
       <View style={styles.content}>
         <Image source={require('../assets/images/logo_sans_fond.png')} style={styles.logo} />
         <Text style={styles.title}>Terrabia</Text>
-        <Text style={styles.subtitle}>Produits frais, directement du producteur</Text>
+        <Text style={styles.subtitle}>Acheteurs et Producteurs, connectés directement</Text>
       </View>
 
       <View style={styles.footer}>

@@ -1,69 +1,113 @@
 import { Product, ProductResponse } from '../types/Product';
-import { mockProducts } from '../data/mockProducts';
+import { produitService } from './ProduitService';
+import { mapProduitsToProducts, mapProduitToProduct } from '../utils/dataMapper';
+import logger from '../utils/logger';
 
 /**
  * Service pour gérer les produits
- * Ce service utilise des données mockées pour le moment
- * Plus tard, il sera facile de remplacer par de vrais appels API
+ * Utilise le backend via ProduitService et adapte les données au format frontend
  */
 class ProductService {
   /**
-   * Simule un délai réseau (optionnel)
-   */
-  private async simulateNetworkDelay(ms: number = 300): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  /**
-   * Récupère tous les produits
+   * Récupère tous les produits depuis le backend
    */
   async getAllProducts(): Promise<Product[]> {
-    await this.simulateNetworkDelay();
-    return mockProducts;
+    try {
+      const response = await produitService.getAllProduits();
+
+      if (response.success && response.data) {
+        return mapProduitsToProducts(response.data);
+      }
+
+      logger.error('Échec de récupération des produits', { error: response.error });
+      return [];
+    } catch (error) {
+      logger.error('Erreur lors de la récupération des produits', error);
+      return [];
+    }
   }
 
   /**
-   * Récupère les produits en offre du jour (les 3 premiers)
+   * Récupère les produits en offre du jour (les 6 premiers)
    */
   async getDailyOffers(): Promise<Product[]> {
-    await this.simulateNetworkDelay();
-    return mockProducts.slice(0, 3);
+    try {
+      const products = await this.getAllProducts();
+      // Retourne les 6 premiers produits comme offres du jour
+      return products.slice(0, 6);
+    } catch (error) {
+      logger.error('Erreur lors de la récupération des offres du jour', error);
+      return [];
+    }
   }
 
   /**
-   * Récupère les produits recommandés
+   * Récupère les produits recommandés (tous les produits pour l'instant)
    */
   async getRecommendedProducts(): Promise<Product[]> {
-    await this.simulateNetworkDelay();
-    return mockProducts;
+    return await this.getAllProducts();
   }
 
   /**
    * Récupère un produit par son ID
    */
   async getProductById(id: string): Promise<Product | undefined> {
-    await this.simulateNetworkDelay();
-    return mockProducts.find(product => product.id === id);
+    try {
+      const products = await this.getAllProducts();
+      return products.find(product => product.id === id);
+    } catch (error) {
+      logger.error(`Erreur lors de la récupération du produit ${id}`, error);
+      return undefined;
+    }
   }
 
   /**
    * Recherche des produits par nom
    */
   async searchProducts(query: string): Promise<Product[]> {
-    await this.simulateNetworkDelay();
-    const lowerQuery = query.toLowerCase();
-    return mockProducts.filter(product =>
-      product.name.toLowerCase().includes(lowerQuery) ||
-      product.description.toLowerCase().includes(lowerQuery)
-    );
+    try {
+      const products = await this.getAllProducts();
+      const lowerQuery = query.toLowerCase();
+      return products.filter(product =>
+        product.name.toLowerCase().includes(lowerQuery) ||
+        product.description.toLowerCase().includes(lowerQuery)
+      );
+    } catch (error) {
+      logger.error('Erreur lors de la recherche de produits', error);
+      return [];
+    }
   }
 
   /**
    * Récupère les produits par catégorie
    */
-  async getProductsByCategory(category: string): Promise<Product[]> {
-    await this.simulateNetworkDelay();
-    return mockProducts.filter(product => product.category === category);
+  async getProductsByCategory(categoryName: string): Promise<Product[]> {
+    try {
+      const products = await this.getAllProducts();
+      return products.filter(product => product.category.toLowerCase() === categoryName.toLowerCase());
+    } catch (error) {
+      logger.error(`Erreur lors de la récupération des produits de la catégorie ${categoryName}`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Récupère les produits par ID de catégorie (utilise l'API backend directement)
+   */
+  async getProductsByCategoryId(categoryId: number): Promise<Product[]> {
+    try {
+      const response = await produitService.getProduitsByCategorie(categoryId);
+
+      if (response.success && response.data) {
+        return mapProduitsToProducts(response.data);
+      }
+
+      logger.error('Échec de récupération des produits par catégorie', { error: response.error });
+      return [];
+    } catch (error) {
+      logger.error(`Erreur lors de la récupération des produits de la catégorie ${categoryId}`, error);
+      return [];
+    }
   }
 }
 

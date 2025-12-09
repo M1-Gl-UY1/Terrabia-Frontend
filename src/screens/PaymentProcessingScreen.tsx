@@ -16,10 +16,11 @@ type PaymentProcessingNavigationProp = NativeStackNavigationProp<RootStackParamL
 const PaymentProcessingScreen = () => {
   const navigation = useNavigation<PaymentProcessingNavigationProp>();
   const route = useRoute();
-  const { amount, paymentMethod, phoneNumber } = route.params as {
+  const { amount, paymentMethod, phoneNumber, orderId } = route.params as {
     amount: number;
     paymentMethod: 'orange' | 'momo';
     phoneNumber: string;
+    orderId: number;
   };
 
   const [progress, setProgress] = useState(0);
@@ -53,7 +54,7 @@ const PaymentProcessingScreen = () => {
               amount,
               paymentMethod,
               phoneNumber,
-              orderId: `ORD-${Date.now()}`,
+              orderId,
             });
           }, 500);
           return 100;

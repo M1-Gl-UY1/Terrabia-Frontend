@@ -25,7 +25,7 @@ const PaymentSuccessScreen = () => {
     amount: number;
     paymentMethod: 'orange' | 'momo' | 'card';
     phoneNumber?: string;
-    orderId: string;
+    orderId: number;
   };
 
   const scaleAnim = new Animated.Value(0);
