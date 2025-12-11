@@ -1,6 +1,7 @@
 import { Product, ProductResponse } from '../types/Product';
 import { produitService } from './ProduitService';
 import { mapProduitsToProducts, mapProduitToProduct } from '../utils/dataMapper';
+import { Categorie } from '../types/Backend';
 import logger from '../utils/logger';
 
 /**
@@ -23,6 +24,25 @@ class ProductService {
       return [];
     } catch (error) {
       logger.error('Erreur lors de la récupération des produits', error);
+      return [];
+    }
+  }
+
+  /**
+   * Récupère toutes les catégories
+   */
+  async getAllCategories(): Promise<Categorie[]> {
+    try {
+      const response = await produitService.getAllCategories();
+
+      if (response.success && response.data) {
+        return response.data;
+      }
+
+      logger.error('Échec de récupération des catégories', { error: response.error });
+      return [];
+    } catch (error) {
+      logger.error('Erreur lors de la récupération des catégories', error);
       return [];
     }
   }
