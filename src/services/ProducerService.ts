@@ -348,14 +348,40 @@ class ProducerService {
         API_CONFIG.ENDPOINTS.CATEGORIES.GET_ALL
       );
 
-      if (response.success && response.data) {
+      // Vérifier que response.data est un tableau valide
+      if (response.success && Array.isArray(response.data)) {
         logger.success('✅ Catégories récupérées', { count: response.data.length });
         return response;
       }
 
-      // Si l'endpoint n'existe pas, retourner des catégories par défaut
-      if (response.status === 403 || response.status === 404) {
-        logger.warn('⚠️ Endpoint catégories non disponible, utilisation des données par défaut');
+      // Si response.data n'est pas un tableau (ex: "No response content")
+      if (response.success && !Array.isArray(response.data)) {
+        logger.warn('⚠️ Réponse invalide du backend (non-tableau), utilisation des données par défaut');
+
+        const defaultCategories: Categorie[] = [
+          { idCat: 1, nomCat: 'Fruits' },
+          { idCat: 2, nomCat: 'Légumes' },
+          { idCat: 3, nomCat: 'Céréales' },
+          { idCat: 4, nomCat: 'Tubercules' },
+          { idCat: 5, nomCat: 'Épices' },
+          { idCat: 6, nomCat: 'Produits laitiers' },
+          { idCat: 7, nomCat: 'Viandes' },
+          { idCat: 8, nomCat: 'Poissons' },
+        ];
+
+        return {
+          success: true,
+          data: defaultCategories,
+          status: 200,
+        };
+      }
+
+      // Si l'endpoint n'existe pas ou erreur HTTP, retourner des catégories par défaut
+      if (!response.success && (response.status === 403 || response.status === 404 || response.status === 500)) {
+        logger.warn('⚠️ Endpoint catégories non disponible, utilisation des données par défaut', {
+          status: response.status,
+          error: response.error,
+        });
 
         const defaultCategories: Categorie[] = [
           { idCat: 1, nomCat: 'Fruits' },

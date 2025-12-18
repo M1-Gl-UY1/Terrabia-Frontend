@@ -41,6 +41,15 @@ const AddProductScreen = () => {
   const user = useAppSelector(state => state.auth.user);
   const { toast, showSuccess, showError, hideToast } = useToast();
 
+  // 🔍 DEBUG: Vérifier l'état de l'utilisateur au chargement du composant
+  console.log('🎬 AddProductScreen - Composant chargé');
+  console.log('👤 État utilisateur:', {
+    exists: !!user,
+    idUser: user?.idUser,
+    nom: user?.nom,
+    role: user?.role,
+  });
+
   const [formData, setFormData] = useState({
     nom: '',
     prix: '',
@@ -127,38 +136,70 @@ const AddProductScreen = () => {
   };
 
   const validateForm = (): boolean => {
+    console.log('🔍 VALIDATION - Données du formulaire:', formData);
+
     const newErrors: FormErrors = {};
 
     if (!formData.nom.trim()) {
       newErrors.nom = 'Le nom du produit est obligatoire';
+      console.log('❌ Erreur: nom vide');
     } else if (formData.nom.length < 2) {
       newErrors.nom = 'Le nom doit contenir au moins 2 caractères';
+      console.log('❌ Erreur: nom trop court');
     }
 
     if (!formData.prix.trim()) {
       newErrors.prix = 'Le prix est obligatoire';
+      console.log('❌ Erreur: prix vide');
     } else if (isNaN(Number(formData.prix)) || Number(formData.prix) <= 0) {
       newErrors.prix = 'Veuillez entrer un prix valide';
+      console.log('❌ Erreur: prix invalide');
     }
 
     if (!formData.quantite.trim()) {
       newErrors.quantite = 'La quantité en stock est obligatoire';
+      console.log('❌ Erreur: quantité vide');
     } else if (isNaN(Number(formData.quantite)) || Number(formData.quantite) < 0) {
       newErrors.quantite = 'Veuillez entrer une quantité valide';
+      console.log('❌ Erreur: quantité invalide');
     }
 
     if (formData.idCategorie === 0) {
       newErrors.idCategorie = 'Veuillez sélectionner une catégorie';
+      console.log('❌ Erreur: catégorie non sélectionnée');
     }
+
+    console.log('📋 Erreurs de validation:', newErrors);
+    console.log('✅ Validation réussie?', Object.keys(newErrors).length === 0);
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
-    if (!validateForm() || !user?.idUser) {
+    console.log('🚀 BOUTON CLIQUÉ - handleSubmit appelé');
+    console.log('👤 User:', user);
+
+    if (!user?.idUser) {
+      console.log('❌ BLOQUÉ: Pas d\'utilisateur connecté');
       return;
     }
+
+    const isValid = validateForm();
+    if (!isValid) {
+      console.log('❌ BLOQUÉ: Validation échouée');
+      return;
+    }
+
+    console.log('✅ VALIDATION PASSÉE - Démarrage création produit');
+
+    // 🔍 DEBUG: Vérifier le rôle de l'utilisateur
+    console.log('👤 Utilisateur connecté:', {
+      idUser: user.idUser,
+      nom: user.nom,
+      role: user.role,
+      email: user.email
+    });
 
     setIsLoading(true);
 

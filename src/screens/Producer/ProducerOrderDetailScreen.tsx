@@ -13,7 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
-import { Commande, StatutCommande, LigneCommande } from '../../types/Backend';
+import { Commande, StatutCommande, LigneCommande, Utilisateur } from '../../types/Backend';
+import ChatService from '../../services/ChatService';
 import {
   ArrowLeft,
   Package,
@@ -25,6 +26,7 @@ import {
   Phone,
   User,
   CreditCard,
+  MessageSquare,
 } from 'lucide-react-native';
 
 type OrderDetailNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -113,8 +115,33 @@ const ProducerOrderDetailScreen = () => {
     );
   };
 
-  const handleContactClient = () => {
-    Alert.alert('Contacter le client', `Appeler ${order.acheteur?.numTel || 'le client'} ?`);
+  const handleContactClient = async () => {
+    if (!order.acheteur) return;
+
+    try {
+      // Chercher une conversation existante
+      const response = await ChatService.findOrCreateConversation(
+        order.acheteur.idUser,
+        order.acheteur.idUser
+      );
+
+      if (response.success && response.data) {
+        // Navigation vers la conversation existante
+        navigation.navigate('Chat', {
+          conversationId: response.data.idConversation,
+          otherUser: order.acheteur as Utilisateur,
+        });
+      } else if (response.error === 'NO_CONVERSATION') {
+        // Aucune conversation existante, naviguer vers le chat (une conversation sera créée au premier message)
+        navigation.navigate('Chat', {
+          conversationId: 0, // Temporaire, sera créé lors du premier message
+          otherUser: order.acheteur as Utilisateur,
+        });
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'ouverture du chat:', error);
+      Alert.alert('Erreur', 'Impossible d\'ouvrir le chat');
+    }
   };
 
   const statusConfig = getStatusConfig(order.statut);
@@ -251,8 +278,8 @@ const ProducerOrderDetailScreen = () => {
         {/* Action Buttons */}
         <View style={styles.actionsContainer}>
           <TouchableOpacity style={styles.contactButton} onPress={handleContactClient}>
-            <Phone size={20} color="#2E7D32" />
-            <Text style={styles.contactButtonText}>Contacter le client</Text>
+            <MessageSquare size={20} color="#2E7D32" strokeWidth={2} />
+            <Text style={styles.contactButtonText}>Envoyer un message</Text>
           </TouchableOpacity>
 
           {order.statut === StatutCommande.PAYEE && (

@@ -4,3 +4,4 @@ export { default as ProducerOrdersScreen } from './ProducerOrdersScreen';
 export { default as ProducerProfileScreen } from './ProducerProfileScreen';
 export { default as AddProductScreen } from './AddProductScreen';
 export { default as ProducerOrderDetailScreen } from './ProducerOrderDetailScreen';
+export { default as CategoriesManagementScreen } from './CategoriesManagementScreen';

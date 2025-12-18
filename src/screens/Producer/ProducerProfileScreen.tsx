@@ -26,6 +26,8 @@ import {
   ChevronRight,
   Star,
   Shield,
+  MessageSquare,
+  FolderOpen,
 } from 'lucide-react-native';
 
 type ProfileNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -166,8 +168,24 @@ const ProducerProfileScreen = () => {
           />
         </Section>
 
+        {/* Gestion */}
+        <Section title="Gestion">
+          <ProfileItem
+            icon={FolderOpen}
+            label="Gérer les catégories"
+            onPress={() => navigation.navigate('CategoriesManagement')}
+            iconColor="#F59E0B"
+          />
+        </Section>
+
         {/* Paramètres */}
         <Section title="Paramètres">
+          <ProfileItem
+            icon={MessageSquare}
+            label="Messages"
+            onPress={() => navigation.navigate('Conversations')}
+            iconColor="#10B981"
+          />
           <ProfileItem
             icon={Settings}
             label="Paramètres du compte"

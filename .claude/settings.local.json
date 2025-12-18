@@ -5,7 +5,11 @@
       "Bash(npx tsc --noEmit)",
       "Bash(curl:*)",
       "mcp__ide__getDiagnostics",
-      "WebFetch(domain:terrabia-backend-g2ym.onrender.com)"
+      "WebFetch(domain:terrabia-backend-g2ym.onrender.com)",
+      "Bash(tree:*)",
+      "Bash(javap:*)",
+      "Bash(./mvnw clean:*)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []

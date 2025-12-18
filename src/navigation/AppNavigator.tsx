@@ -27,6 +27,8 @@ import PaymentSuccessScreen from '../screens/PaymentSuccessScreen';
 import OrderHistoryScreen from '../screens/OrderHistoryScreen';
 import OrderDetailScreen from '../screens/OrderDetailScreen';
 import CardPaymentScreen from '../screens/CardPaymentScreen';
+import ConversationsScreen from '../screens/ConversationsScreen';
+import ChatScreen from '../screens/ChatScreen';
 
 // Screens - Registration
 import LoginScreen from '../screens/Registration/LoginScreen';
@@ -43,12 +45,13 @@ import {
   ProducerProfileScreen,
   AddProductScreen,
   ProducerOrderDetailScreen,
+  CategoriesManagementScreen,
 } from '../screens/Producer';
 
 // Types
 import { Product } from '../types/Product';
 import { PaymentMethod } from '../types/Payment';
-import { Commande, Produit } from '../types/Backend';
+import { Commande, Produit, Utilisateur } from '../types/Backend';
 
 // ============================================
 // TYPE DEFINITIONS
@@ -114,11 +117,16 @@ export type RootStackParamList = {
   OrderDetails: { orderId: number };
   OrderHistory: undefined;
 
+  // Chat Screens
+  Conversations: undefined;
+  Chat: { conversationId: number; otherUser: Utilisateur };
+
   // Producer Screens
   AddProduct: undefined;
   EditProduct: { product: Produit };
   ProducerNotifications: undefined;
   ProducerOrderDetail: { order: Commande };
+  CategoriesManagement: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -291,12 +299,17 @@ export default function AppNavigator() {
       <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
       <Stack.Screen name="OrderDetails" component={OrderDetailScreen} />
 
+      {/* Chat Screens */}
+      <Stack.Screen name="Conversations" component={ConversationsScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen} />
+
       {/* Navigation principale Producteur */}
       <Stack.Screen name="ProducerTabs" component={ProducerTabNavigator} />
       <Stack.Screen name="AddProduct" component={AddProductScreen} />
       <Stack.Screen name="EditProduct" component={AddProductScreen} />
       <Stack.Screen name="ProducerNotifications" component={NotifScreen} />
       <Stack.Screen name="ProducerOrderDetail" component={ProducerOrderDetailScreen} />
+      <Stack.Screen name="CategoriesManagement" component={CategoriesManagementScreen} />
     </Stack.Navigator>
   );
 }

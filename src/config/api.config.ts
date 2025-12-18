@@ -35,6 +35,7 @@ export const API_CONFIG = {
     // ==========================================
     CATEGORIES: {
       GET_ALL: '/api/categories',
+      CREATE: '/api/categories',
     },
 
     // ==========================================

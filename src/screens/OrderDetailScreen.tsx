@@ -23,10 +23,12 @@ import {
   Truck,
   Store,
   Phone,
+  MessageSquare,
 } from 'lucide-react-native';
 import { useAppSelector } from '../store/types';
 import { orderService } from '../services/OrderService';
-import { Commande, StatutCommande, LigneCommande } from '../types/Backend';
+import { Commande, StatutCommande, LigneCommande, Utilisateur } from '../types/Backend';
+import ChatService from '../services/ChatService';
 
 type OrderDetailNavigationProp = NativeStackNavigationProp<RootStackParamList, 'OrderDetails'>;
 
@@ -152,6 +154,34 @@ const OrderDetailScreen = () => {
   const subtotal = order.details.reduce((sum, item) => sum + item.prixUnitaire * item.quantite, 0);
   const deliveryFee = order.montantTotal - subtotal;
 
+  // Extraire le vendeur du premier article (tous les articles d'une commande proviennent du même vendeur)
+  const vendor = order.details.length > 0 ? order.details[0].produit.vendeur : null;
+
+  const handleContactVendor = async () => {
+    if (!vendor || !user?.idUser) return;
+
+    try {
+      // Chercher une conversation existante
+      const response = await ChatService.findOrCreateConversation(user.idUser, vendor.idUser);
+
+      if (response.success && response.data) {
+        // Navigation vers la conversation existante
+        navigation.navigate('Chat', {
+          conversationId: response.data.idConversation,
+          otherUser: vendor as Utilisateur,
+        });
+      } else if (response.error === 'NO_CONVERSATION') {
+        // Aucune conversation existante, naviguer vers le chat (une conversation sera créée au premier message)
+        navigation.navigate('Chat', {
+          conversationId: 0, // Temporaire, sera créé lors du premier message
+          otherUser: vendor as Utilisateur,
+        });
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'ouverture du chat:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
@@ -240,6 +270,20 @@ const OrderDetailScreen = () => {
             </View>
           </View>
         </View>
+
+        {/* Contact Vendor */}
+        {vendor && (
+          <TouchableOpacity
+            style={styles.contactVendorButton}
+            onPress={handleContactVendor}
+            activeOpacity={0.7}
+          >
+            <MessageSquare size={20} color="#10B981" strokeWidth={2} />
+            <Text style={styles.contactVendorText}>
+              Contacter {vendor.prenom} {vendor.nom}
+            </Text>
+          </TouchableOpacity>
+        )}
 
         {/* Action Buttons */}
         {order.statut === StatutCommande.EN_ATTENTE && (
@@ -481,6 +525,23 @@ const styles = StyleSheet.create({
   reorderButtonText: {
     color: '#F48C06',
     fontSize: 16,
+    fontWeight: '600',
+  },
+  contactVendorButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    borderColor: '#10B981',
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  contactVendorText: {
+    color: '#10B981',
+    fontSize: 15,
     fontWeight: '600',
   },
 });

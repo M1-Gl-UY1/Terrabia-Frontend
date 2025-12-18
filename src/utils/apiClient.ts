@@ -242,14 +242,15 @@ class ApiClient {
             errorMessage = 'Erreur serveur, veuillez réessayer';
           } else {
             // Texte brut du serveur (ex: "Email already exists")
-            errorMessage = responseData.trim();
+            errorMessage = responseData.trim() || `Erreur HTTP ${response.status}`;
           }
         } else {
-          errorMessage = responseData?.message || responseData?.error || 'Une erreur est survenue';
+          errorMessage = responseData?.message || responseData?.error || `Erreur HTTP ${response.status}`;
         }
 
         logger.apiError(method, fullURL, {
           status: response.status,
+          statusText: response.statusText,
           message: errorMessage,
           data: responseData,
           contentType,
@@ -368,7 +369,13 @@ class ApiClient {
           ? responseData.trim()
           : responseData?.message || responseData?.error || 'Erreur lors de l\'upload';
 
-        logger.error('❌ Échec upload', { status: response.status, error: errorMessage });
+        logger.error('❌ Échec upload', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorMessage,
+          fullResponse: responseData,  // Log complet de la réponse
+          url: fullURL
+        });
         return {
           success: false,
           error: errorMessage,
